@@ -20,7 +20,7 @@ def connected(client):
 def subscribe(client, userdata, mid, granted_qos):
     print("subcribe thanh cong")
 
-def disconnected():
+def disconnected(client):
     print("Ngat ket noi")
     sys.exit(1)
     
@@ -51,7 +51,7 @@ def getPort(): # tu dong tim dung port
 #ser = serial.Serial ( port = getPort (), baudrate =115200)
 
 client = MQTTClient(AIO_USERNAME,AIO_KEY)
-client.on_connect = connected
+client.on_connect = connected 
 client.on_disconnect = disconnected
 client.on_subscribe = subscribe
 client.on_message = message
