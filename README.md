@@ -1,7 +1,7 @@
-# 🚀 Đồ Án DADN
+# 🚀 Đồ Án Đa Ngành
 
 
-## 🌟 Mạch
+## 🌟 Hardware
 
 ## 🌟 Gateway
 - **Auto-Detect Port:** Tự động tìm và kết nối với bo mạch (Yolo:Bit/Arduino) qua cổng USB, không cần hardcode tên cổng.
@@ -20,8 +20,16 @@
 **1. Clone code về máy:**
 ```bash
 git clone <link_github_của_bạn>
-cd <tên_thư_mục>
+git fetch
+git checkout nhánh_của_mình (hardware/backend/frontend/gateway)
 ```
+*Lưu ý Sau khi code xong lưu và đẩy lên nhánh của mình*
+```bash
+
+git push origin nhánh_của_mình (hardware/backend/frontend/gateway)
+```
+
+
 **2. Cài đặt thư viện:**
 Dự án sử dụng file `requirements.txt` để quản lý thư viện. Bạn chỉ cần mở Terminal/CMD tại thư mục chứa code và gõ 1 lệnh duy nhất sau:
 ```bash

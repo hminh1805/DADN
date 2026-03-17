@@ -6,7 +6,7 @@ import random
 import time
 import json
 
-on_auto = True # dành cho tự động hoặc 
+on_auto = True
 
 AIO_FEED_ID = ['sensor','maybom','led','servo'] # tạo thành list cho dễ
 #trên account tạo các feed phải có tên giống y như vầy
