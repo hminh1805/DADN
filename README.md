@@ -18,11 +18,11 @@ Hệ thống sử dụng giao thức **MQTT** kết nối với Adafruit IO và 
 ```bash
 git clone <link_github_của_bạn>
 cd <tên_thư_mục>
-
+```
 **2. Cài đặt thư viện:**
 Dự án sử dụng file `requirements.txt` để quản lý thư viện. Bạn chỉ cần mở Terminal/CMD tại thư mục chứa code và gõ 1 lệnh duy nhất sau:
 ```bash
 pip install -r requirements.txt
-
+```
 
 
