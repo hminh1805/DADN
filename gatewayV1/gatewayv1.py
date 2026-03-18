@@ -6,15 +6,14 @@ import random
 import time
 import json
 
-on_auto = True
+
 AIO_TEST_LOCAL = 'test' # bật tắt cái auto tạo giá trị ảo để test
 AIO_SENSOR_ID = 'sensor'
 AIO_FEED_ID = ['maybom','led','servo'] # tạo thành list cho dễ
-#trên account tạo các feed phải có tên giống y như vầy
+#trên account tạo các feed phải có tên giống y như vầy : 4 feed  = 3 feed trên + 1 feed sensor (có thể thêm 1 feed là test để chạy lệnh auto gửi dữ liệu ảo)
 
-AIO_USERNAME = 'your_username' # 
+AIO_USERNAME = 'your_username'
 AIO_KEY = 'your_key'
-
 
 
 def connected(client):
@@ -161,6 +160,8 @@ else:
     ser = None
 
 
+on_auto = True
+print(">>> ĐÃ BẬT CHẾ ĐỘ AUTO <<<")
 
 
 while True: 
