@@ -6,19 +6,19 @@ import random
 import time
 import json
 
-on_auto = True
 
-AIO_FEED_ID = ['sensor','maybom','led','servo'] # tạo thành list cho dễ
-#trên account tạo các feed phải có tên giống y như vầy
+AIO_TEST_LOCAL = 'test' # bật tắt cái auto tạo giá trị ảo để test
+AIO_SENSOR_ID = 'sensor'
+AIO_FEED_ID = ['maybom','led','servo'] # tạo thành list cho dễ
+#trên account tạo các feed phải có tên giống y như vầy : 4 feed  = 3 feed trên + 1 feed sensor (có thể thêm 1 feed là test để chạy lệnh auto gửi dữ liệu ảo)
 
-AIO_USERNAME = 'your_username' # 
+AIO_USERNAME = 'your_username'
 AIO_KEY = 'your_key'
-
-
 
 
 def connected(client):
     print("Ket noi thanh cong")
+    client.subscribe(AIO_TEST_LOCAL)
     for feed in AIO_FEED_ID:
         client.subscribe(feed)
 
@@ -51,7 +51,7 @@ def processData ( data ) :
     data = data.replace('!',"").replace("#","").strip()
     splitData = data.split(':')
     print("Dữ liệu thô từ cổng USB: ", splitData)
-    if(len(splitData) == 4):
+    if(len(splitData) == 5):
         try:
             thong_so = {
                 'nhiet_do' : float(splitData[0]),
@@ -63,7 +63,7 @@ def processData ( data ) :
             chuoi_json = json.dumps(thong_so)
             print("Đang đẩy JSON lên: ", chuoi_json)
             
-            client.publish("sensor",chuoi_json)
+            client.publish(AIO_SENSOR_ID,chuoi_json)
             
         except ValueError:
             print("Lỗi giá trị")
@@ -110,12 +110,12 @@ def message(client, feed_id, payload):
     elif feed_id == 'led':
         lenh_xuong_mach = f"LED:{payload}#"
     
-    #test
-    elif feed_id == 'che-do-auto':
+    #test -> ko can quan tam
+    elif feed_id == 'test':
         # Cái này là lệnh nội bộ cho Gateway, 
         if payload == '0':
             on_auto = False
-            print(">>> ĐÃ TẮT CHẾ ĐỘ AUTO (Chuyển sang điều khiển tay) <<<")
+            print(">>> ĐÃ TẮT CHẾ ĐỘ AUTO <<<")
         else:
             on_auto = True
             print(">>> ĐÃ BẬT CHẾ ĐỘ AUTO <<<")
@@ -145,7 +145,24 @@ client.on_subscribe = subscribe
 client.on_message = message
 client.connect()
 client.loop_background()
-ser = serial.Serial ( port = getPort (), baudrate =115200)
+
+
+portName = getPort()
+if portName != 'None':
+    try:
+        ser = serial.Serial(port=portName, baudrate=115200)
+        print(f"Đã kết nối mạch qua cổng: {portName}")
+    except Exception as e:
+        print("Lỗi mở cổng USB!")
+        ser = None
+else:
+    print("Không cắm cáp USB. Đang chạy chế độ GIẢ LẬP (Mock Data) chờ Web!")
+    ser = None
+
+
+on_auto = True
+print(">>> ĐÃ BẬT CHẾ ĐỘ AUTO <<<")
+
 
 while True: 
     #nếu có cắm dây
@@ -163,6 +180,6 @@ while True:
             }
             chuoi_json = json.dumps(thong_so)
             print("TEST ẢO: Đang đẩy JSON lên: ", chuoi_json)
-            client.publish("sensor", chuoi_json)
+            client.publish(AIO_SENSOR_ID, chuoi_json)
         time.sleep(4)
     
