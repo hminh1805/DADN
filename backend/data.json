@@ -1,0 +1,20 @@
+{
+  "mode": "auto",
+  "sensors": {
+    "temperature": 0,
+    "humidity": 0,
+    "pet_food": 0,
+    "water_level": 100,
+    "motion": false,
+    "pet_detected": null,
+    "timestamp": 0
+  },
+  "devices": {
+    "fan": false,
+    "heater": false,
+    "pump": false,
+    "speaker": false,
+    "pet_feeder": false
+  },
+  "activities": []
+}
