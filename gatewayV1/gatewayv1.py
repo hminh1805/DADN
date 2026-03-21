@@ -9,10 +9,10 @@ import json
 
 AIO_TEST_LOCAL = 'test' # bật tắt cái auto tạo giá trị ảo để test
 AIO_SENSOR_ID = 'sensor'
-AIO_FEED_ID = ['maybom','led','servo'] # tạo thành list cho dễ
+AIO_FEED_ID = ['maybom','led','servo','quat'] # tạo thành list cho dễ
 #trên account tạo các feed phải có tên giống y như vầy : 4 feed  = 3 feed trên + 1 feed sensor (có thể thêm 1 feed là test để chạy lệnh auto gửi dữ liệu ảo)
 
-AIO_USERNAME = 'your_username'
+AIO_USERNAME = 'your_name'
 AIO_KEY = 'your_key'
 
 
@@ -30,17 +30,23 @@ def disconnected(client):
     sys.exit(1)
 
 # tự động tìm Port
-def getPort(): 
+import serial.tools.list_ports
+
+def getPort():
     ports = serial.tools.list_ports.comports()
-    N = len(ports)
-    comPort = 'None'
-    for i in range(0,N):
-        port = ports[i]
-        strPort = str(port)
-        if 'USB Serial Device' in strPort:
-            splitPort  = strPort.split(' ')
-            comPort = (splitPort[0])
-    return comPort    
+    print("--- ĐANG QUÉT CỔNG USB ---")
+
+    for port in ports:
+        print(f"lỗ cắm: {port.device} - {port.description}")
+        
+        
+        keyword = ["USB", "SERIAL", "CH340", "CP210", "FTDI", "MBED", "ARDUINO", "JLINK"]
+        desc = port.description.upper()
+        if any(key in desc for key in keyword):
+            return port.device
+            
+    print(" Không tìm thấy cổng nào phù hợp!")
+    return "None" 
 
 #================================
 # CHIỀU MẠCH -> SERVER
@@ -51,7 +57,7 @@ def processData ( data ) :
     data = data.replace('!',"").replace("#","").strip()
     splitData = data.split(':')
     print("Dữ liệu thô từ cổng USB: ", splitData)
-    if(len(splitData) == 5):
+    if(len(splitData) == 4):
         try:
             thong_so = {
                 'nhiet_do' : float(splitData[0]),
@@ -181,5 +187,5 @@ while True:
             chuoi_json = json.dumps(thong_so)
             print("TEST ẢO: Đang đẩy JSON lên: ", chuoi_json)
             client.publish(AIO_SENSOR_ID, chuoi_json)
-        time.sleep(4)
+        time.sleep(10)
     
