@@ -31,5 +31,3 @@ Dự án sử dụng file `requirements.txt` để quản lý thư viện. Bạn
 ```bash
 pip install -r requirements.txt
 ```
-
-
