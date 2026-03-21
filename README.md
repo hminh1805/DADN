@@ -15,6 +15,7 @@
 - Chịu trách nhiệm hiển thị UI Dashboard giám sát và điều khiển.
 - Công nghệ: ReactJS, Vite.
 - **Hướng dẫn chạy Frontend:**
+
     **1. Mở terminal, di chuyển vào thư mục frontend: `cd frontend`**
   
     **2. Cài đặt thư viện: `npm install`**
