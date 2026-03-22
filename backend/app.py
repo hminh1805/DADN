@@ -19,7 +19,6 @@ AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
 AIO_KEY = os.getenv("AIO_KEY", "your_key")
 
 SENSOR_FEED = f"{AIO_USERNAME}/feeds/sensor"
-MOTION_FEED = f"{AIO_USERNAME}/feeds/motion"
 PET_DETECTED_FEED = f"{AIO_USERNAME}/feeds/pet-detected"
 
 CONTROL_FEEDS = {
@@ -41,12 +40,6 @@ mqtt_client.username_pw_set(AIO_USERNAME, AIO_KEY)
 
 def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
-
-
-def _to_bool(value):
-    if isinstance(value, bool):
-        return value
-    return str(value).strip().lower() in {"1", "true", "on", "open", "yes"}
 
 
 def publish_device_status():
@@ -122,7 +115,6 @@ def run_auto_logic(sensor_data):
 
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
-    motion = _to_bool(sensor_data.get("motion", False))
     pet = sensor_data.get("pet_detected")
 
     if temp > AUTO_FAN_ON:
@@ -138,11 +130,6 @@ def run_auto_logic(sensor_data):
     if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
         execute_command("pump", "refill")
 
-    if motion:
-        execute_command("speaker", "on")
-        threading.Timer(3.0, lambda: execute_command("speaker", "off")).start()
-        add_realtime_activity("warning", "Phát hiện chuyển động ở khu vực cấm.")
-
     if pet in {"dog", "cat"}:
         socketio.emit("pet_detected", {"pet": pet, "confidence": 1.0, "timestamp": now_ms()})
         if pet == AUTHORIZED_PET:
@@ -151,26 +138,87 @@ def run_auto_logic(sensor_data):
             add_realtime_activity("warning", f"Nhận diện {pet} không đúng cấu hình cho phép.")
 
 
-def parse_gateway_sensor(payload):
-    try:
-        raw = json.loads(payload)
-    except json.JSONDecodeError:
-        return None
+# ── Định dạng giống gateway (Adafruit feed "sensor") ─────────────────
+# JSON từ gateway.publish: luôn là object với đúng 4 key:
+#   nhiet_do, do_am, muc_nuoc, anh_sang
+# (mock gateway: thong_so = { nhiet_do, do_am, muc_nuoc, anh_sang })
+# Chuỗi từ mạch (nếu gửi thẳng lên MQTT): !nhiet_do:do_am:muc_nuoc:anh_sang#
+#   — giống gateway processData (bản cũ)
 
-    # Gateway gửi JSON: nhiet_do, do_am, muc_nuoc, anh_sang
+
+def _gateway_json_to_internal(raw: dict):
+    """Map JSON gateway → schema nội bộ / API cho frontend."""
+    if not isinstance(raw, dict):
+        return None
+    default_food = float(raw.get("anh_sang", 0))
     return {
         "temperature": float(raw.get("nhiet_do", 0)),
         "humidity": float(raw.get("do_am", 0)),
         "water_level": float(raw.get("muc_nuoc", 0)),
-        "pet_food": float(raw.get("anh_sang", 0)),
+        "dog_food": float(raw.get("dog_food", default_food)),
+        "cat_food": float(raw.get("cat_food", default_food)),
         "timestamp": now_ms(),
     }
+
+
+def _parse_sensor_serial(payload: str):
+    """!nhiet_do:do_am:muc_nuoc:anh_sang# — giống gateway processData (bản cũ)."""
+    s = payload.strip()
+    if "!" in s and "#" in s:
+        start, end = s.find("!"), s.find("#")
+        if start < end:
+            s = s[start + 1 : end]
+    else:
+        s = s.replace("!", "").replace("#", "").strip()
+    parts = [p.strip() for p in s.split(":") if p.strip() != ""]
+    if len(parts) != 4:
+        return None
+    try:
+        nhiet_do = float(parts[0])
+        do_am = float(parts[1])
+        muc_nuoc = float(parts[2])
+        anh_sang = float(parts[3])
+    except ValueError:
+        return None
+    return _gateway_json_to_internal(
+        {
+            "nhiet_do": nhiet_do,
+            "do_am": do_am,
+            "muc_nuoc": muc_nuoc,
+            "anh_sang": anh_sang,
+        }
+    )
+
+
+def parse_sensor_payload(payload: str):
+    """
+    - JSON (Adafruit / gateway): {"nhiet_do","do_am","muc_nuoc","anh_sang"}
+    - Chuỗi mạch: !a:b:c:d# (thứ tự như gateway)
+    """
+    payload = (payload or "").strip()
+    if not payload:
+        return None
+
+    if payload[0] in "{[":
+        try:
+            raw = json.loads(payload)
+        except json.JSONDecodeError:
+            return None
+        return _gateway_json_to_internal(raw)
+
+    if "!" in payload and "#" in payload:
+        return _parse_sensor_serial(payload)
+
+    try:
+        raw = json.loads(payload)
+        return _gateway_json_to_internal(raw)
+    except json.JSONDecodeError:
+        return None
 
 
 def on_connect(client, userdata, flags, rc):
     print("Connected Adafruit IO, rc =", rc)
     client.subscribe(SENSOR_FEED)
-    client.subscribe(MOTION_FEED)
     client.subscribe(PET_DETECTED_FEED)
 
 
@@ -180,17 +228,13 @@ def on_message(client, userdata, msg):
     print(f"[MQTT] {topic}: {payload}")
 
     if topic == SENSOR_FEED:
-        sensor_payload = parse_gateway_sensor(payload)
+        sensor_payload = parse_sensor_payload(payload)
         if sensor_payload:
             update_sensors(sensor_payload)
             publish_sensor_update()
             run_auto_logic(sensor_payload)
-        return
-
-    if topic == MOTION_FEED:
-        update_sensors({"motion": _to_bool(payload), "timestamp": now_ms()})
-        publish_sensor_update()
-        run_auto_logic(load_data()["sensors"])
+        else:
+            print(f"[sensor] Bỏ qua payload không hợp lệ: {payload!r}")
         return
 
     if topic == PET_DETECTED_FEED:
