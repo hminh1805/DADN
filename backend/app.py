@@ -136,6 +136,11 @@ def run_auto_logic(sensor_data):
     # if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
     #     execute_command("pump", "refill")
 
+    if motion:
+        execute_command("speaker", "on")
+        threading.Timer(3.0, lambda: execute_command("speaker", "off")).start()
+        add_realtime_activity("warning", "Phát hiện chuyển động ở khu vực cấm.")
+
     if pet in {"dog", "cat"}:
         socketio.emit("pet_detected", {"pet": pet, "confidence": 1.0, "timestamp": now_ms()})
         if pet == AUTHORIZED_PET:

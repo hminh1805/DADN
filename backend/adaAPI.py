@@ -2,13 +2,13 @@ import os
 import json
 import time
 import paho.mqtt.client as mqtt
-
+from dotenv import load_dotenv 
+load_dotenv()
 # ================= CẤU HÌNH ADAFRUIT IO =================
-# AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
-# AIO_KEY = os.getenv("AIO_KEY", "your_key")
+AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
+AIO_KEY = os.getenv("AIO_KEY", "your_key")
 
-AIO_USERNAME = 'your_key'
-AIO_KEY = 'your_name'
+
 
 FEEDS = {
     "sensor": f"{AIO_USERNAME}/feeds/sensor",

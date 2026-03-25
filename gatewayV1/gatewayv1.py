@@ -2,19 +2,24 @@ import sys
 from Adafruit_IO import MQTTClient
 import serial.tools.list_ports
 
+import os
 import random
 import time
 import json
-
+from dotenv import load_dotenv 
+load_dotenv()
 
 AIO_TEST_LOCAL = 'test' # bật tắt cái auto tạo giá trị ảo để test
 AIO_SENSOR_ID = 'sensor'
 AIO_FEED_ID = ['maybom','led','servo','quat','heater'] # tạo thành list cho dễ
 
 
-AIO_USERNAME = 'your_name'
-AIO_KEY = 'your_key'
 
+AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
+AIO_KEY = os.getenv("AIO_KEY", "your_key")
+ 
+print(AIO_USERNAME)
+print(AIO_KEY)
 
 def connected(client):
     print("Ket noi thanh cong")
@@ -57,13 +62,14 @@ def processData ( data ) :
     data = data.replace('!',"").replace("#","").strip()
     splitData = data.split(':')
     print("Dữ liệu thô từ cổng USB: ", splitData)
-    if(len(splitData) == 4):
+    if(len(splitData) == 5):
         try:
             thong_so = {
                 'nhiet_do' : float(splitData[0]),
                 'do_am' : float(splitData[1]),
                 'muc_nuoc' : float(splitData[2]),
-                'anh_sang' : float(splitData[3])
+                'motion' : splitData[3],
+                'distance' : float(splitData[4])
             }
             
             chuoi_json = json.dumps(thong_so)
@@ -75,7 +81,7 @@ def processData ( data ) :
             print("Lỗi giá trị")
             
     else:
-        print("Lỗi thiếu hoặc dư tham số. Yêu cầu gửi 4 tham số! (nhiệt độ :độ ẩm kk : độ ẩm đất : ánh sáng)")
+        print("Lỗi thiếu hoặc dư tham số. Yêu cầu gửi 6 tham số! (nhiệt độ :độ ẩm kk : độ ẩm đất : motion, distance)")
 
 #đọc từng byte từ mạch -> tạo thành data
 mess = ""
@@ -107,22 +113,21 @@ def message(client, feed_id, payload):
     
     lenh_xuong_mach = "" 
 
-
     # 1. NHẬN LỆNH TỪ SERVER
     if feed_id == 'maybom':
-        lenh_xuong_mach = f"MAYBOM:{payload}#"
+        lenh_xuong_mach = f"{payload}#"
         
     elif feed_id == 'servo':
-        lenh_xuong_mach = f"SERVO:{payload}#"
+        lenh_xuong_mach = f"{payload}#"
         
     elif feed_id == 'led':
-        lenh_xuong_mach = f"LED:{payload}#"
+        lenh_xuong_mach = f"{payload}#"
     
     elif feed_id == 'heater':
-        lenh_xuong_mach = f"HEATER:{payload}#"
+        lenh_xuong_mach = f"{payload}#"
         
     elif feed_id == 'quat':
-        lenh_xuong_mach = f"QUAT:{payload}#"
+        lenh_xuong_mach = f"{payload}#"
         
     #test -> ko can quan tam
     elif feed_id == 'test':
