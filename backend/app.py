@@ -3,50 +3,45 @@ import os
 import threading
 from datetime import datetime
 
-import paho.mqtt.client as mqtt
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
 from data_manager import add_activity, load_data, save_data, update_device, update_sensors
+import adaAPI
+
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ================= CẤU HÌNH ADAFRUIT IO =================
-AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
-AIO_KEY = os.getenv("AIO_KEY", "your_key")
+# AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
+# AIO_KEY = os.getenv("AIO_KEY", "your_key")
 
-SENSOR_FEED = f"{AIO_USERNAME}/feeds/sensor"
-MOTION_FEED = f"{AIO_USERNAME}/feeds/motion"
-PET_DETECTED_FEED = f"{AIO_USERNAME}/feeds/pet-detected"
+# SENSOR_FEED = f"{AIO_USERNAME}/feeds/sensor"
+# MOTION_FEED = f"{AIO_USERNAME}/feeds/motion"
+# PET_DETECTED_FEED = f"{AIO_USERNAME}/feeds/pet-detected"
 
-CONTROL_FEEDS = {
-    "pump": f"{AIO_USERNAME}/feeds/maybom",
-    "speaker": f"{AIO_USERNAME}/feeds/led",
-    "pet_feeder": f"{AIO_USERNAME}/feeds/servo",
-    "fan": f"{AIO_USERNAME}/feeds/quat",
-    "heater": f"{AIO_USERNAME}/feeds/heater",
-}
+# CONTROL_FEEDS = {
+#     "pump": f"{AIO_USERNAME}/feeds/maybom",
+#     "speaker": f"{AIO_USERNAME}/feeds/led",
+#     "pet_feeder": f"{AIO_USERNAME}/feeds/servo",
+#     "fan": f"{AIO_USERNAME}/feeds/quat",
+#     "heater": f"{AIO_USERNAME}/feeds/heater",
+# }
 
 AUTHORIZED_PET = os.getenv("AUTHORIZED_PET", "dog")
 AUTO_FAN_ON = 30.0
 AUTO_HEATER_ON = 20.0
 AUTO_WATER_REFILL_THRESHOLD = 20.0
 
-mqtt_client = mqtt.Client()
-mqtt_client.username_pw_set(AIO_USERNAME, AIO_KEY)
+# mqtt_client = mqtt.Client()
+# mqtt_client.username_pw_set(AIO_USERNAME, AIO_KEY)
 
 
 def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
-
-
-def _to_bool(value):
-    if isinstance(value, bool):
-        return value
-    return str(value).strip().lower() in {"1", "true", "on", "open", "yes"}
 
 
 def publish_device_status():
@@ -78,11 +73,15 @@ def _set_device_state(device, on):
 
 def _timed_toggle(device, duration_sec):
     _set_device_state(device, True)
-    threading.Timer(duration_sec, lambda: _set_device_state(device, False)).start()
+    def _set_device_state_after():
+        _set_device_state(device, False)
+        _send_to_feed(device, "0")
+        
+    threading.Timer(duration_sec, lambda: _set_device_state_after()).start()
 
 
-def _send_to_feed(feed_key, payload):
-    mqtt_client.publish(CONTROL_FEEDS[feed_key], payload)
+def _send_to_feed(feed_key, payload):     
+        adaAPI.publish_data(feed_key, payload)
 
 
 def execute_command(device, action):
@@ -90,11 +89,11 @@ def execute_command(device, action):
     if device in {"dog_feeder", "cat_feeder"}:
         device = "pet_feeder"
 
-    if device not in CONTROL_FEEDS:
+    if device not in adaAPI.FEEDS:
         return False, "Thiết bị không hợp lệ."
 
     if device == "pet_feeder" and action == "dispense":
-        _send_to_feed(device, "DISPENSE")
+        _send_to_feed(device, "1")
         _timed_toggle(device, 2.0)
         add_activity("success", "Đã nhả thức ăn cho thú cưng.")
         return True, "Đã nhả thức ăn cho thú cưng."
@@ -122,21 +121,20 @@ def run_auto_logic(sensor_data):
 
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
-    motion = _to_bool(sensor_data.get("motion", False))
     pet = sensor_data.get("pet_detected")
 
-    if temp > AUTO_FAN_ON:
-        execute_command("fan", "on")
-        execute_command("heater", "off")
-    elif temp < AUTO_HEATER_ON:
-        execute_command("fan", "off")
-        execute_command("heater", "on")
-    else:
-        execute_command("fan", "off")
-        execute_command("heater", "off")
+    # if temp > AUTO_FAN_ON:
+    #     execute_command("fan", "on")
+    #     execute_command("heater", "off")
+    # elif temp < AUTO_HEATER_ON:
+    #     execute_command("fan", "off")
+    #     execute_command("heater", "on")
+    # else:
+    #     execute_command("fan", "off")
+    #     execute_command("heater", "off")
 
-    if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
-        execute_command("pump", "refill")
+    # if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
+    #     execute_command("pump", "refill")
 
     if motion:
         execute_command("speaker", "on")
@@ -151,62 +149,37 @@ def run_auto_logic(sensor_data):
             add_realtime_activity("warning", f"Nhận diện {pet} không đúng cấu hình cho phép.")
 
 
-def parse_gateway_sensor(payload):
-    try:
-        raw = json.loads(payload)
-    except json.JSONDecodeError:
-        return None
-
-    # Gateway gửi JSON: nhiet_do, do_am, muc_nuoc, anh_sang
-    return {
-        "temperature": float(raw.get("nhiet_do", 0)),
-        "humidity": float(raw.get("do_am", 0)),
-        "water_level": float(raw.get("muc_nuoc", 0)),
-        "pet_food": float(raw.get("anh_sang", 0)),
-        "timestamp": now_ms(),
-    }
 
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected Adafruit IO, rc =", rc)
-    client.subscribe(SENSOR_FEED)
-    client.subscribe(MOTION_FEED)
-    client.subscribe(PET_DETECTED_FEED)
+# --- DÁN CỤC NÀY VÀO CHỖ VỪA XÓA ---
+# lấy dữ liệu từ ada
+def xu_ly_tin_nhan_mqtt(feed_key, payload):
+    """
+    Đây là TỔNG ĐÀI MỚI.
+    Thằng shipper adaAPI.py cứ có hàng là nó sẽ réo gọi cái hàm này và ném data vào 'payload'.
+    """
+    print(f"🎯 [App.py] Đã nhận hàng từ shipper adaAPI - Feed: {feed_key} | Data: {payload}")
 
+    if feed_key == "sensor":
+        # Nhờ adaAPI lọc hộ rồi, nên 'payload' lúc này chắc chắn 100% là Dictionary (JSON)
+        # Không cần dùng hàm parse_gateway_sensor() nữa, cứ thế mà xài thẳng luôn!
+        update_sensors(payload)
+        publish_sensor_update()
+        run_auto_logic(payload)
 
-def on_message(client, userdata, msg):
-    topic = msg.topic
-    payload = msg.payload.decode("utf-8").strip()
-    print(f"[MQTT] {topic}: {payload}")
-
-    if topic == SENSOR_FEED:
-        sensor_payload = parse_gateway_sensor(payload)
-        if sensor_payload:
-            update_sensors(sensor_payload)
-            publish_sensor_update()
-            run_auto_logic(sensor_payload)
-        return
-
-    if topic == MOTION_FEED:
+    elif feed_key == "motion":
         update_sensors({"motion": _to_bool(payload), "timestamp": now_ms()})
         publish_sensor_update()
         run_auto_logic(load_data()["sensors"])
-        return
 
-    if topic == PET_DETECTED_FEED:
+    elif feed_key == "pet_detected":
         pet = payload.lower() if payload.lower() in {"dog", "cat"} else None
         update_sensors({"pet_detected": pet, "timestamp": now_ms()})
         publish_sensor_update()
         run_auto_logic(load_data()["sensors"])
 
-
-mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
-
-
-def start_mqtt():
-    mqtt_client.connect("io.adafruit.com", 1883, 60)
-    mqtt_client.loop_start()
+# Ra lệnh cho thằng adaAPI bắt đầu chạy, và đưa cái hàm "Tổng đài" này cho nó giữ
+adaAPI.start_mqtt(ham_xu_ly=xu_ly_tin_nhan_mqtt)
 
 
 @app.route("/api/sensors/latest", methods=["GET"])
