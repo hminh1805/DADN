@@ -44,12 +44,6 @@ def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
 
 
-def _to_bool(value):
-    if isinstance(value, bool):
-        return value
-    return str(value).strip().lower() in {"1", "true", "on", "open", "yes"}
-
-
 def publish_device_status():
     socketio.emit("device_status", load_data()["devices"])
 
@@ -127,7 +121,6 @@ def run_auto_logic(sensor_data):
 
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
-    motion = _to_bool(sensor_data.get("motion", False))
     pet = sensor_data.get("pet_detected")
 
     # if temp > AUTO_FAN_ON:
@@ -142,11 +135,6 @@ def run_auto_logic(sensor_data):
 
     # if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
     #     execute_command("pump", "refill")
-
-    if motion:
-        execute_command("speaker", "on")
-        threading.Timer(3.0, lambda: execute_command("speaker", "off")).start()
-        add_realtime_activity("warning", "Phát hiện chuyển động ở khu vực cấm.")
 
     if pet in {"dog", "cat"}:
         socketio.emit("pet_detected", {"pet": pet, "confidence": 1.0, "timestamp": now_ms()})

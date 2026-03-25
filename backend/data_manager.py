@@ -7,14 +7,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "data.json")
 MAX_ACTIVITIES = 100
 
+# Dữ liệu lưu file khớp với backend sau khi map từ JSON gateway (Adafruit feed "sensor"):
+#   nhiet_do -> temperature,  do_am -> humidity,
+#   muc_nuoc -> water_level,   anh_sang -> dog_food / cat_food (mặc định)
 DEFAULT_DATA = {
     "mode": "auto",
     "sensors": {
         "temperature": 0.0,
         "humidity": 0.0,
-        "pet_food": 0.0,
         "water_level": 0.0,
-        "motion": False,
+        "dog_food": 0.0,
+        "cat_food": 0.0,
         "pet_detected": None,
         "timestamp": 0,
     },
@@ -54,6 +57,8 @@ def load_data():
 
     merged = copy.deepcopy(DEFAULT_DATA)
     _deep_merge(merged, incoming)
+    # Bỏ field cũ nếu file data.json còn lưu
+    merged["sensors"].pop("motion", None)
     return merged
 
 
