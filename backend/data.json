@@ -1,20 +1,621 @@
 {
   "mode": "auto",
   "sensors": {
-    "temperature": 0,
-    "humidity": 0,
-    "pet_food": 0,
-    "water_level": 100,
+    "temperature": 25.7,
+    "humidity": 43.4,
+    "pet_food": 0.0,
+    "water_level": 53.0,
     "motion": false,
     "pet_detected": null,
-    "timestamp": 0
+    "timestamp": 1774422518708
   },
   "devices": {
-    "fan": false,
-    "heater": false,
+    "fan": true,
+    "heater": true,
     "pump": false,
     "speaker": false,
     "pet_feeder": false
   },
-  "activities": []
+  "activities": [
+    {
+      "id": "1774393531437",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774393531437
+    },
+    {
+      "id": "1774393527950",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho thú cưng.",
+      "timestamp": 1774393527950
+    },
+    {
+      "id": "1774393519651",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774393519651
+    },
+    {
+      "id": "1774393444120",
+      "type": "info",
+      "message": "Thiết bị pump -> OFF.",
+      "timestamp": 1774393444120
+    },
+    {
+      "id": "1774393436008",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774393436008
+    },
+    {
+      "id": "1774393425685",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho thú cưng.",
+      "timestamp": 1774393425685
+    },
+    {
+      "id": "1774393415605",
+      "type": "info",
+      "message": "Thiết bị pump -> ON.",
+      "timestamp": 1774393415605
+    },
+    {
+      "id": "1774393411254",
+      "type": "info",
+      "message": "Thiết bị pump -> OFF.",
+      "timestamp": 1774393411254
+    },
+    {
+      "id": "1774393385834",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774393385834
+    },
+    {
+      "id": "1774393385408",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774393385408
+    },
+    {
+      "id": "1774393384569",
+      "type": "info",
+      "message": "Thiết bị heater -> ON.",
+      "timestamp": 1774393384569
+    },
+    {
+      "id": "1774393383235",
+      "type": "info",
+      "message": "Thiết bị pump -> ON.",
+      "timestamp": 1774393383235
+    },
+    {
+      "id": "1774393381160",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774393381160
+    },
+    {
+      "id": "1774393149445",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho thú cưng.",
+      "timestamp": 1774393149445
+    },
+    {
+      "id": "1774393138177",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774393138177
+    },
+    {
+      "id": "1774391955127",
+      "type": "info",
+      "message": "Thiết bị pump -> OFF.",
+      "timestamp": 1774391955127
+    },
+    {
+      "id": "1774391868915",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho thú cưng.",
+      "timestamp": 1774391868915
+    },
+    {
+      "id": "1774391849495",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774391849495
+    },
+    {
+      "id": "1774391841630",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774391841630
+    },
+    {
+      "id": "1774391816229",
+      "type": "info",
+      "message": "Thiết bị pump -> ON.",
+      "timestamp": 1774391816229
+    },
+    {
+      "id": "1774391782807",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774391782807
+    },
+    {
+      "id": "1774391774134",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774391774134
+    },
+    {
+      "id": "1774391731534",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho thú cưng.",
+      "timestamp": 1774391731534
+    },
+    {
+      "id": "1774390935834",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390935834
+    },
+    {
+      "id": "1774390935795",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390935795
+    },
+    {
+      "id": "1774390925745",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390925745
+    },
+    {
+      "id": "1774390925698",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390925698
+    },
+    {
+      "id": "1774390915715",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390915715
+    },
+    {
+      "id": "1774390915684",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390915684
+    },
+    {
+      "id": "1774390906084",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390906084
+    },
+    {
+      "id": "1774390906046",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390906046
+    },
+    {
+      "id": "1774390895699",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390895699
+    },
+    {
+      "id": "1774390895675",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390895675
+    },
+    {
+      "id": "1774390886123",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390886123
+    },
+    {
+      "id": "1774390886098",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390886098
+    },
+    {
+      "id": "1774390875707",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390875707
+    },
+    {
+      "id": "1774390875685",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390875685
+    },
+    {
+      "id": "1774390865696",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390865696
+    },
+    {
+      "id": "1774390865673",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390865673
+    },
+    {
+      "id": "1774390855687",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390855687
+    },
+    {
+      "id": "1774390855660",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390855660
+    },
+    {
+      "id": "1774390845690",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390845690
+    },
+    {
+      "id": "1774390845666",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390845666
+    },
+    {
+      "id": "1774390835687",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390835687
+    },
+    {
+      "id": "1774390835659",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390835659
+    },
+    {
+      "id": "1774390825685",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390825685
+    },
+    {
+      "id": "1774390825660",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390825660
+    },
+    {
+      "id": "1774390815689",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390815689
+    },
+    {
+      "id": "1774390815660",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390815660
+    },
+    {
+      "id": "1774390805683",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390805683
+    },
+    {
+      "id": "1774390805653",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390805653
+    },
+    {
+      "id": "1774390795702",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390795702
+    },
+    {
+      "id": "1774390795668",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390795668
+    },
+    {
+      "id": "1774390785694",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390785694
+    },
+    {
+      "id": "1774390785669",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390785669
+    },
+    {
+      "id": "1774390775700",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390775700
+    },
+    {
+      "id": "1774390775674",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390775674
+    },
+    {
+      "id": "1774390765726",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390765726
+    },
+    {
+      "id": "1774390765702",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390765702
+    },
+    {
+      "id": "1774390755695",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390755695
+    },
+    {
+      "id": "1774390755665",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390755665
+    },
+    {
+      "id": "1774390745698",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390745698
+    },
+    {
+      "id": "1774390745660",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390745660
+    },
+    {
+      "id": "1774390735912",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390735912
+    },
+    {
+      "id": "1774390735887",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390735887
+    },
+    {
+      "id": "1774390711887",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390711887
+    },
+    {
+      "id": "1774390711857",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390711857
+    },
+    {
+      "id": "1774390701843",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390701843
+    },
+    {
+      "id": "1774390701822",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390701822
+    },
+    {
+      "id": "1774390691816",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390691816
+    },
+    {
+      "id": "1774390691797",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390691797
+    },
+    {
+      "id": "1774390681957",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774390681957
+    },
+    {
+      "id": "1774390681927",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390681927
+    },
+    {
+      "id": "1774390681874",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390681874
+    },
+    {
+      "id": "1774390671821",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390671821
+    },
+    {
+      "id": "1774390671804",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390671804
+    },
+    {
+      "id": "1774390661820",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390661820
+    },
+    {
+      "id": "1774390661806",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390661806
+    },
+    {
+      "id": "1774390651852",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390651852
+    },
+    {
+      "id": "1774390651840",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390651840
+    },
+    {
+      "id": "1774390641837",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390641837
+    },
+    {
+      "id": "1774390641825",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390641825
+    },
+    {
+      "id": "1774390631804",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390631804
+    },
+    {
+      "id": "1774390631789",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390631789
+    },
+    {
+      "id": "1774390621808",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390621808
+    },
+    {
+      "id": "1774390621795",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390621795
+    },
+    {
+      "id": "1774390611874",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390611874
+    },
+    {
+      "id": "1774390611858",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390611858
+    },
+    {
+      "id": "1774390601779",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390601779
+    },
+    {
+      "id": "1774390601766",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390601766
+    },
+    {
+      "id": "1774390591846",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774390591846
+    },
+    {
+      "id": "1774390591803",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390591803
+    },
+    {
+      "id": "1774390591774",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390591774
+    },
+    {
+      "id": "1774390581814",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390581814
+    },
+    {
+      "id": "1774390581798",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390581798
+    },
+    {
+      "id": "1774390571809",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390571809
+    },
+    {
+      "id": "1774390571798",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774390571798
+    },
+    {
+      "id": "1774390561823",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774390561823
+    },
+    {
+      "id": "1774390561804",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774390561804
+    },
+    {
+      "id": "1774390561788",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774390561788
+    }
+  ]
 }
