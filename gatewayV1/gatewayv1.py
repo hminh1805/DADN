@@ -202,7 +202,7 @@ while True:
                 'nhiet_do': round(random.uniform(25.0, 35.0), 1),
                 'do_am': round(random.uniform(50.0, 80.0), 1),
                 'muc_nuoc': round(random.uniform(10.0, 90.0), 1),
-                'anh_sang': round(random.uniform(200.0, 800.0), 1),
+                'anh_sang': round(random.uniform(200.0, 800.0), 1)
                 
             }
             chuoi_json = json.dumps(thong_so)
