@@ -45,4 +45,11 @@ Dự án sử dụng file `requirements.txt` để quản lý thư viện. Bạn
 pip install -r requirements.txt
 ```
 
+**3. Cách chạy:**
+gõ
+```bash
+.\run_myapp.bat
+```
+nó sẽ hiện ra 3 terminal ( của fe/be/gateway )
+
 
