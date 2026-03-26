@@ -28,27 +28,6 @@ def now_ms():
     return int(time.time() * 1000)
 
 # ================= BỘ LỌC DỮ LIỆU ĐA NĂNG =================
-def _to_bool(v, default=False):
-    if v is None:
-        return default
-    if isinstance(v, bool):
-        return v
-    s = str(v).strip().upper()
-    if s in {"1", "ON", "TRUE", "YES", "Y"}:
-        return True
-    if s in {"0", "OFF", "FALSE", "NO", "N"}:
-        return False
-    try:
-        return bool(int(float(s)))
-    except Exception:
-        return default
-
-def _to_float(v, default=0.0):
-    try:
-        return float(v)
-    except Exception:
-        return default
-
 def loc_du_lieu_sensor(payload):
 
     # TRƯỜNG HỢP 1: Nhận được JSON chuẩn (từ Gateway Python gửi lên)
@@ -58,9 +37,8 @@ def loc_du_lieu_sensor(payload):
             "temperature": float(raw.get("nhiet_do", raw.get("temperature", 0))),
             "humidity": float(raw.get("do_am", raw.get("humidity", 0))),
             "water_level": float(raw.get("muc_nuoc", raw.get("water_level", 0))),
-            "motion": _to_bool(raw.get("motion", False), default=False),
-            "distance": _to_float(raw.get("distance", raw.get("dis", 0)), default=0.0),
-            "pet_food": _to_float(raw.get("anh_sang", raw.get("pet_food", 0)), default=0.0),
+            "motion": bool(raw.get("motion", False), default=False),
+            "distance": float(raw.get("distance", raw.get("dis", 0)), default=0.0),
             "timestamp": now_ms()
         }
     except json.JSONDecodeError:
