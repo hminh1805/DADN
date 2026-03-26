@@ -7,9 +7,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "data.json")
 MAX_ACTIVITIES = 100
 
-# Dữ liệu lưu file khớp với backend sau khi map từ JSON gateway (Adafruit feed "sensor"):
-#   nhiet_do -> temperature,  do_am -> humidity,
-#   muc_nuoc -> water_level,   anh_sang -> dog_food / cat_food (mặc định)
 DEFAULT_DATA = {
     "mode": "auto",
     "sensors": {
@@ -18,6 +15,7 @@ DEFAULT_DATA = {
         "water_level": 0.0,
         "dog_food": 0.0,
         "cat_food": 0.0,
+        "motion": False,
         "pet_detected": None,
         "timestamp": 0,
     },
@@ -27,6 +25,7 @@ DEFAULT_DATA = {
         "pump": False,
         "speaker": False,
         "pet_feeder": False,
+        "servo": False,
     },
     "activities": [],
 }
@@ -36,29 +35,28 @@ def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
 
 
-def _deep_merge(base, incoming):
+def deep_merge(base, incoming):
     for key, value in incoming.items():
         if isinstance(value, dict) and isinstance(base.get(key), dict):
-            _deep_merge(base[key], value)
+            deep_merge(base[key], value)
         else:
             base[key] = value
     return base
 
 
-def _ensure_file():
+def ensure_file():
     if not os.path.exists(DATA_FILE):
         save_data(copy.deepcopy(DEFAULT_DATA))
 
 
 def load_data():
-    _ensure_file()
+    ensure_file()
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         incoming = json.load(f)
 
     merged = copy.deepcopy(DEFAULT_DATA)
-    _deep_merge(merged, incoming)
-    # Bỏ field cũ nếu file data.json còn lưu
-    merged["sensors"].pop("motion", None)
+    deep_merge(merged, incoming)
+    merged["sensors"].pop("distance", None)
     return merged
 
 

@@ -3,46 +3,40 @@ import os
 import threading
 from datetime import datetime
 
+import paho.mqtt.client as mqtt
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
-from data_manager import add_activity, load_data, save_data, update_device, update_sensors
+from data_manager import add_activity, load_data, save_data, should_refill_food, update_device, update_sensors
 import adaAPI
 
+AUTO_FAN_ON = 30
+AUTO_HEATER_ON = 22
+AUTO_OFF = 26
+AUTO_REFILL = 30
+AUTHORIZED_PET = 'dog'
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# ================= CẤU HÌNH ADAFRUIT IO =================
-# AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
-# AIO_KEY = os.getenv("AIO_KEY", "your_key")
-
-# SENSOR_FEED = f"{AIO_USERNAME}/feeds/sensor"
-# MOTION_FEED = f"{AIO_USERNAME}/feeds/motion"
-# PET_DETECTED_FEED = f"{AIO_USERNAME}/feeds/pet-detected"
-
-# CONTROL_FEEDS = {
-#     "pump": f"{AIO_USERNAME}/feeds/maybom",
-#     "speaker": f"{AIO_USERNAME}/feeds/led",
-#     "pet_feeder": f"{AIO_USERNAME}/feeds/servo",
-#     "fan": f"{AIO_USERNAME}/feeds/quat",
-#     "heater": f"{AIO_USERNAME}/feeds/heater",
-# }
-
-AUTHORIZED_PET = os.getenv("AUTHORIZED_PET", "dog")
-AUTO_FAN_ON = 30.0
-AUTO_HEATER_ON = 20.0
-AUTO_WATER_REFILL_THRESHOLD = 20.0
-
-# mqtt_client = mqtt.Client()
-# mqtt_client.username_pw_set(AIO_USERNAME, AIO_KEY)
-
-
 def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
 
+def to_bool(v, default=False):
+    if v == "1":
+        return True
+    if v == "0":
+        return False
+    return default
+
+def clamp(v, lo, hi):
+    try:
+        v = float(v)
+    except Exception:
+        v = lo
+    return max(lo, min(hi, v))
 
 def publish_device_status():
     socketio.emit("device_status", load_data()["devices"])
@@ -66,48 +60,86 @@ def add_realtime_activity(activity_type, message):
     )
 
 
-def _set_device_state(device, on):
+def set_device_state(device, on):
     update_device(device, on)
     publish_device_status()
 
 
-def _timed_toggle(device, duration_sec):
-    _set_device_state(device, True)
-    def _set_device_state_after():
-        _set_device_state(device, False)
-        _send_to_feed(device, "0")
+def timed_toggle(device, duration_sec, feed_key=None):
+    feed_key = feed_key or device
+    set_device_state(device, True)
+    def set_device_state_after():
+        set_device_state(device, False)
+        send_to_feed(feed_key, "0")
         
-    threading.Timer(duration_sec, lambda: _set_device_state_after()).start()
+    threading.Timer(duration_sec, lambda: set_device_state_after()).start()
 
 
-def _send_to_feed(feed_key, payload):     
+def send_to_feed(feed_key, payload):     
         adaAPI.publish_data(feed_key, payload)
 
 
 def execute_command(device, action):
-    # Tương thích ngược với dữ liệu cũ (dog_feeder/cat_feeder)
+    requested_device = device
+    food_inventory_key = None
+    food_name = None
+    feed_device = device
+    state_device = device
+
     if device in {"dog_feeder", "cat_feeder"}:
+        state_device = device
+        feed_device = "pet_feeder"
+        food_inventory_key = "dog_food" if requested_device == "dog_feeder" else "cat_food"
+        food_name = "Buddy" if requested_device == "dog_feeder" else "Mochi"
         device = "pet_feeder"
 
-    if device not in adaAPI.FEEDS:
+    if requested_device == "servo":
+        state_device = "servo"
+        feed_device = "pet_feeder"
+        device = "pet_feeder"
+        if action != "dispense":
+            return False, "Action không hợp lệ cho servo."
+
+    if feed_device not in adaAPI.FEEDS:
         return False, "Thiết bị không hợp lệ."
 
     if device == "pet_feeder" and action == "dispense":
-        _send_to_feed(device, "1")
-        _timed_toggle(device, 2.0)
-        add_activity("success", "Đã nhả thức ăn cho thú cưng.")
-        return True, "Đã nhả thức ăn cho thú cưng."
+        send_to_feed(feed_device, "1")
+        timed_toggle(state_device, 2.0, feed_key=feed_device)
+        keys_to_update = []
+        if requested_device in {"dog_feeder", "cat_feeder"} and food_inventory_key:
+            keys_to_update = [food_inventory_key]
+        elif requested_device == "servo":
+            keys_to_update = ["dog_food", "cat_food"]
+
+        if keys_to_update:
+            updates = {}
+            for k in keys_to_update:
+                data = load_data()
+                current = float(data["sensors"].get(k, 0.0))
+                updates[k] = clamp(current + 15, 0, 100)
+            updates["timestamp"] = now_ms()
+            update_sensors(updates)
+            publish_sensor_update()
+
+        msg = (
+            f"Đã refill thức ăn cho {food_name or 'thú cưng'}."
+            if action == "refill"
+            else f"Đã nhả thức ăn cho {food_name or 'thú cưng'}."
+        )
+        add_activity("success", msg)
+        return True, msg
 
     if device == "pump" and action == "refill":
-        _send_to_feed(device, "1")
-        _timed_toggle("pump", 4.0)
+        send_to_feed(device, "1")
+        timed_toggle("pump", 4.0)
         add_activity("info", "Đã bật bơm refill nước tự động.")
         return True, "Đã bật bơm refill nước."
 
     if action in {"on", "off"}:
         raw = "1" if action == "on" else "0"
-        _send_to_feed(device, raw)
-        _set_device_state(device, action == "on")
+        send_to_feed(device, raw)
+        set_device_state(device, action == "on")
         add_activity("info", f"Thiết bị {device} -> {action.upper()}.")
         return True, f"Đã gửi lệnh {action.upper()} cho {device}."
 
@@ -122,19 +154,34 @@ def run_auto_logic(sensor_data):
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
     pet = sensor_data.get("pet_detected")
+    motion = to_bool(sensor_data.get("motion", data["sensors"].get("motion", False)), default=False)
+    distance_food_pct = float(sensor_data.get("distance", data["sensors"].get("distance", 0.0)))
+    update_sensors({
+        "dog_food": clamp(distance_food_pct, 0, 100),
+        "cat_food": clamp(distance_food_pct, 0, 100),
+        "timestamp": now_ms(),
+    })
+    publish_sensor_update()
 
-    # if temp > AUTO_FAN_ON:
-    #     execute_command("fan", "on")
-    #     execute_command("heater", "off")
-    # elif temp < AUTO_HEATER_ON:
-    #     execute_command("fan", "off")
-    #     execute_command("heater", "on")
-    # else:
-    #     execute_command("fan", "off")
-    #     execute_command("heater", "off")
+    if distance_food_pct < 0.3:
+        add_realtime_activity("warning", f"Thức ăn còn {round(distance_food_pct)}% (< 30%), bắt đầu nhả")
+        execute_command("servo", "dispense")
+        add_realtime_activity("info", "Đã nhả thức ăn cho cả dog_food và cat_food.")
 
-    # if water_level < AUTO_WATER_REFILL_THRESHOLD and not data["devices"]["pump"]:
-    #     execute_command("pump", "refill")
+    if temp >= AUTO_FAN_ON:
+        execute_command("fan", "on")
+        execute_command("heater", "off")
+
+    if temp <= AUTO_HEATER_ON:
+        execute_command("heater", "on")
+        execute_command("fan", "off")
+    
+    if round(temp) == AUTO_OFF:
+        execute_command("fan", "off")
+        execute_command("heater", "off")
+
+    if water_level < AUTO_REFILL and not data["devices"]["pump"]:
+        execute_command("pump", "refill")
 
     if motion:
         execute_command("speaker", "on")
@@ -144,31 +191,23 @@ def run_auto_logic(sensor_data):
     if pet in {"dog", "cat"}:
         socketio.emit("pet_detected", {"pet": pet, "confidence": 1.0, "timestamp": now_ms()})
         if pet == AUTHORIZED_PET:
-            execute_command("pet_feeder", "dispense")
+            feeder_device = "dog_feeder" if pet == "dog" else "cat_feeder"
+            execute_command(feeder_device, "dispense")
         else:
             add_realtime_activity("warning", f"Nhận diện {pet} không đúng cấu hình cho phép.")
 
 
-
-
-# --- DÁN CỤC NÀY VÀO CHỖ VỪA XÓA ---
 # lấy dữ liệu từ ada
 def xu_ly_tin_nhan_mqtt(feed_key, payload):
-    """
-    Đây là TỔNG ĐÀI MỚI.
-    Thằng shipper adaAPI.py cứ có hàng là nó sẽ réo gọi cái hàm này và ném data vào 'payload'.
-    """
-    print(f"🎯 [App.py] Đã nhận hàng từ shipper adaAPI - Feed: {feed_key} | Data: {payload}")
+    print(f"[App.py] Đã nhận hàng từ shipper adaAPI - Feed: {feed_key} | Data: {payload}")
 
     if feed_key == "sensor":
-        # Nhờ adaAPI lọc hộ rồi, nên 'payload' lúc này chắc chắn 100% là Dictionary (JSON)
-        # Không cần dùng hàm parse_gateway_sensor() nữa, cứ thế mà xài thẳng luôn!
         update_sensors(payload)
         publish_sensor_update()
         run_auto_logic(payload)
 
     elif feed_key == "motion":
-        update_sensors({"motion": _to_bool(payload), "timestamp": now_ms()})
+        update_sensors({"motion": to_bool(payload), "timestamp": now_ms()})
         publish_sensor_update()
         run_auto_logic(load_data()["sensors"])
 
@@ -178,7 +217,7 @@ def xu_ly_tin_nhan_mqtt(feed_key, payload):
         publish_sensor_update()
         run_auto_logic(load_data()["sensors"])
 
-# Ra lệnh cho thằng adaAPI bắt đầu chạy, và đưa cái hàm "Tổng đài" này cho nó giữ
+
 adaAPI.start_mqtt(ham_xu_ly=xu_ly_tin_nhan_mqtt)
 
 
