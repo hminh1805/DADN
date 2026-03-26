@@ -24,13 +24,6 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
 
-def to_bool(v, default=False):
-    if v == "1":
-        return True
-    if v == "0":
-        return False
-    return default
-
 def clamp(v, lo, hi):
     try:
         v = float(v)
@@ -154,7 +147,7 @@ def run_auto_logic(sensor_data):
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
     pet = sensor_data.get("pet_detected")
-    motion = to_bool(sensor_data.get("motion", data["sensors"].get("motion", False)), default=False)
+    motion = sensor_data.get("motion", data["sensors"].get("motion", False)), default=False)
     distance_food_pct = float(sensor_data.get("distance", data["sensors"].get("distance", 0.0)))
     update_sensors({
         "dog_food": clamp(distance_food_pct, 0, 100),
@@ -207,7 +200,7 @@ def xu_ly_tin_nhan_mqtt(feed_key, payload):
         run_auto_logic(payload)
 
     elif feed_key == "motion":
-        update_sensors({"motion": to_bool(payload), "timestamp": now_ms()})
+        update_sensors({"motion": payload, "timestamp": now_ms()})
         publish_sensor_update()
         run_auto_logic(load_data()["sensors"])
 
