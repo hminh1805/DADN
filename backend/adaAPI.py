@@ -8,8 +8,6 @@ load_dotenv()
 AIO_USERNAME = os.getenv("AIO_USERNAME", "your_name")
 AIO_KEY = os.getenv("AIO_KEY", "your_key")
 
-
-
 FEEDS = {
     "sensor": f"{AIO_USERNAME}/feeds/sensor",
     "motion": f"{AIO_USERNAME}/feeds/motion",
@@ -30,6 +28,27 @@ def now_ms():
     return int(time.time() * 1000)
 
 # ================= BỘ LỌC DỮ LIỆU ĐA NĂNG =================
+def _to_bool(v, default=False):
+    if v is None:
+        return default
+    if isinstance(v, bool):
+        return v
+    s = str(v).strip().upper()
+    if s in {"1", "ON", "TRUE", "YES", "Y"}:
+        return True
+    if s in {"0", "OFF", "FALSE", "NO", "N"}:
+        return False
+    try:
+        return bool(int(float(s)))
+    except Exception:
+        return default
+
+def _to_float(v, default=0.0):
+    try:
+        return float(v)
+    except Exception:
+        return default
+
 def loc_du_lieu_sensor(payload):
 
     # TRƯỜNG HỢP 1: Nhận được JSON chuẩn (từ Gateway Python gửi lên)
@@ -39,42 +58,41 @@ def loc_du_lieu_sensor(payload):
             "temperature": float(raw.get("nhiet_do", raw.get("temperature", 0))),
             "humidity": float(raw.get("do_am", raw.get("humidity", 0))),
             "water_level": float(raw.get("muc_nuoc", raw.get("water_level", 0))),
-            "pet_food": float(raw.get("anh_sang", raw.get("pet_food", 0))),
+            "motion": _to_bool(raw.get("motion", False), default=False),
+            "distance": _to_float(raw.get("distance", raw.get("dis", 0)), default=0.0),
+            "pet_food": _to_float(raw.get("anh_sang", raw.get("pet_food", 0)), default=0.0),
             "timestamp": now_ms()
         }
     except json.JSONDecodeError:
         pass # Không phải JSON, đi tiếp sang Trường hợp 2
 
-    # TRƯỜNG HỢP 2: Nhận được String thô do bo mạch phát thẳng WiFi
+    # TRƯỜNG HỢP 2: Nhận được String do bo mạch phát thẳng WiFi
     try:
-        # Vứt bỏ mấy ký tự rác rưởi (ví dụ # và ! nếu ông CE có gửi nhầm)
         clean_str = payload.replace("#", "").replace("!", "").strip()
-        
-        # Bắt bài xem ông CE xài dấu phân cách gì
         parts = []
         if "-" in clean_str:     # Ví dụ: "28.5-65-80-10"
             parts = clean_str.split("-")
         elif ":" in clean_str:   # Ví dụ: "28.5:65:80:10"
             parts = clean_str.split(":")
-            
-        # Nếu tách ra đủ 4 món thì gộp thành Dictionary
-        if len(parts) >= 4:
+        if len(parts) >= 5:
+            # Ví dụ string từ mạch: RT:RH:SM:motion:dis
             return {
-                "temperature": float(parts[0]),
-                "humidity": float(parts[1]),
-                "water_level": float(parts[2]),
-                "pet_food": float(parts[3]),
-                "timestamp": now_ms()
+                "temperature": _to_float(parts[0]),
+                "humidity": _to_float(parts[1]),
+                "water_level": _to_float(parts[2]),
+                "motion": _to_bool(parts[3], default=False),
+                "distance": _to_float(parts[4]),
+                "timestamp": now_ms(),
             }
     except Exception as e:
-        print(f"⚠️ [AdaAPI] Đã lọc bỏ vì data không đúng: {payload} -> Lỗi: {e}")
+        print(f"[AdaAPI] Đã lọc bỏ vì data không đúng: {payload} -> Lỗi: {e}")
         return None
     
     return None
 
 # ================= HÀM LẮNG NGHE CHÍNH =================
 def on_connect(client, userdata, flags, rc):
-    print(f"☁️ [AdaAPI] Connected to Adafruit IO, rc = {rc}")
+    print(f"[AdaAPI] Connected to Adafruit IO, rc = {rc}")
     for feed_name, topic in FEEDS.items():
         client.subscribe(topic)
 
@@ -89,15 +107,13 @@ def on_message(client, userdata, msg):
             break
 
     if _callback_nhan_tin_nhan and feed_key:
-        
-        # SẾP NHÌN KHÚC NÀY NÈ: Lọc thẳng tay trước khi giao hàng!
         if feed_key == "sensor":
             data_sach = loc_du_lieu_sensor(payload)
             if data_sach:
-                # Giao nguyên cái Dictionary xịn xò qua cho App.py
+                # Đưa Dictionary qua cho App.py
                 _callback_nhan_tin_nhan(feed_key, data_sach) 
             else:
-                print("❌ [AdaAPI] Từ chối giao hàng vì sensor data rác!")
+                print("[AdaAPI] Từ chối giao hàng vì sensor data rác!")
         else:
             # Các feed nút bấm (1, 0) thì cứ giao string bình thường
             _callback_nhan_tin_nhan(feed_key, payload)
@@ -108,7 +124,7 @@ mqtt_client.on_message = on_message
 def start_mqtt(ham_xu_ly=None):
     global _callback_nhan_tin_nhan
     _callback_nhan_tin_nhan = ham_xu_ly
-    print("🚀 [AdaAPI] Khởi động MQTT Client...")
+    print("[AdaAPI] Khởi động MQTT Client...")
     mqtt_client.connect("io.adafruit.com", 1883, 60)
     mqtt_client.loop_start()
 
@@ -116,4 +132,4 @@ def publish_data(feed_key, payload):
     if feed_key in FEEDS:
         topic = FEEDS[feed_key]
         mqtt_client.publish(topic, str(payload))
-        print(f"📤 [AdaAPI] Gửi lên {feed_key}: {payload}")
+        print(f"[AdaAPI] Gửi lên {feed_key}: {payload}")
