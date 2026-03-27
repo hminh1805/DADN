@@ -19,4 +19,5 @@ export const ENDPOINTS = {
   DEVICE_STATUS:  "/api/devices/status",   // GET  → DeviceStatusPayload
   COMMAND:        "/api/devices/command",  // POST → CommandPayload
   ACTIVITIES:     "/api/activities",       // GET  → ActivityItem[]
+  MODE:           "/api/mode",
 };

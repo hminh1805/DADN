@@ -140,26 +140,30 @@ def execute_command(device, action):
 
 
 def run_auto_logic(sensor_data):
-    data = load_data()
-    if data["mode"] != "auto":
-        return
 
+    
+    
+    
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
     pet = sensor_data.get("pet_detected")
     motion = sensor_data.get("motion")
-    distance_food_pct = float(sensor_data.get("distance", data["sensors"].get("distance", 0.0)))
+    distance_food_pct = float(sensor_data.get("distance"))
+    
+    #
+    max_food = 0.2
+    min_food = 10.0
+    cur_food = (10.0 - distance_food_pct)/(10.0 - 0.2)
+    
     update_sensors({
-        "dog_food": clamp(distance_food_pct, 0, 100),
-        "cat_food": clamp(distance_food_pct, 0, 100),
+        # "dog_food": clamp(distance_food_pct, 0, 100),
+        # "cat_food": clamp(distance_food_pct, 0, 100),
+        "dog_food": cur_food,
+        "cat_food": cur_food,
         "timestamp": now_ms(),
     })
     publish_sensor_update()
 
-    if distance_food_pct < 0.3:
-        add_realtime_activity("warning", f"Thức ăn còn {round(distance_food_pct)}% (< 30%), bắt đầu nhả")
-        execute_command("servo", "dispense")
-        add_realtime_activity("info", "Đã nhả thức ăn cho cả dog_food và cat_food.")
 
     if temp >= AUTO_FAN_ON:
         execute_command("fan", "on")
@@ -173,12 +177,15 @@ def run_auto_logic(sensor_data):
         execute_command("fan", "off")
         execute_command("heater", "off")
 
-    if water_level < AUTO_REFILL and not data["devices"]["pump"]:
+    if water_level < AUTO_REFILL and not load_data()["devices"]["pump"]:
         execute_command("pump", "refill")
 
+    print( 'motion : ' )
+    print(motion)
     if motion:
+        print('co motion')
         execute_command("speaker", "on")
-        threading.Timer(3.0, lambda: execute_command("speaker", "off")).start()
+        threading.Timer(5.0, lambda: execute_command("speaker", "off")).start()
         add_realtime_activity("warning", "Phát hiện chuyển động ở khu vực cấm.")
 
     if pet in {"dog", "cat"}:
@@ -188,27 +195,43 @@ def run_auto_logic(sensor_data):
             execute_command(feeder_device, "dispense")
         else:
             add_realtime_activity("warning", f"Nhận diện {pet} không đúng cấu hình cho phép.")
+            
+def run_manual_logic(sensor_data):
+    
+    
+    temp = float(sensor_data.get("temperature", 0))
+    water_level = float(sensor_data.get("water_level", 0))
+    pet = sensor_data.get("pet_detected")
+    motion = sensor_data.get("motion")
+    distance_food_pct = float(sensor_data.get("distance"))
+    max_food = 0.2
+    min_food = 10.0
+    cur_food = (10.0 - distance_food_pct)/(10.0 - 0.2)
+    
+    update_sensors({
+        # "dog_food": clamp(distance_food_pct, 0, 100),
+        # "cat_food": clamp(distance_food_pct, 0, 100),
+        "dog_food": cur_food,
+        "cat_food": cur_food,
+        "timestamp": now_ms(),
+    })
+    publish_sensor_update()
+    
 
 
 # lấy dữ liệu từ ada
 def xu_ly_tin_nhan_mqtt(feed_key, payload):
-    print(f"[App.py] Đã nhận hàng từ shipper adaAPI - Feed: {feed_key} | Data: {payload}")
-
+    print(f"[App.py] Đã nhận từ adaAPI - Feed: {feed_key} | Data: {payload}")
+    data = load_data()
+        
     if feed_key == "sensor":
         update_sensors(payload)
         publish_sensor_update()
-        run_auto_logic(payload)
+        if data['mode'] == 'auto':
+            run_auto_logic(payload)
+        else: 
+            run_manual_logic(payload)
 
-    elif feed_key == "motion":
-        update_sensors({"motion": payload, "timestamp": now_ms()})
-        publish_sensor_update()
-        run_auto_logic(load_data()["sensors"])
-
-    elif feed_key == "pet_detected":
-        pet = payload.lower() if payload.lower() in {"dog", "cat"} else None
-        update_sensors({"pet_detected": pet, "timestamp": now_ms()})
-        publish_sensor_update()
-        run_auto_logic(load_data()["sensors"])
 
 
 adaAPI.start_mqtt(ham_xu_ly=xu_ly_tin_nhan_mqtt)

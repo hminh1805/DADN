@@ -13,7 +13,7 @@ FEEDS = {
     "motion": f"{AIO_USERNAME}/feeds/motion",
     "pet_detected": f"{AIO_USERNAME}/feeds/pet-detected",
     "pump": f"{AIO_USERNAME}/feeds/maybom",
-    "speaker": f"{AIO_USERNAME}/feeds/led",
+    "speaker": f"{AIO_USERNAME}/feeds/speaker",
     "pet_feeder": f"{AIO_USERNAME}/feeds/servo",
     "fan": f"{AIO_USERNAME}/feeds/quat",
     "heater": f"{AIO_USERNAME}/feeds/heater",
