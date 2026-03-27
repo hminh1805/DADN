@@ -178,7 +178,7 @@ def operPort():
             print("Lỗi mở cổng USB!")
             
     else:
-        print("Không cắm cáp USB. Đang chạy chế độ GIẢ LẬP (Mock Data) chờ Web!")
+        print("Không cắm cáp USB. Đang chạy chế độ GIẢ LẬP (Mock Data)!")
         ser = None
 
 

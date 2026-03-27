@@ -8,7 +8,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
-from data_manager import add_activity, load_data, save_data, should_refill_food, update_device, update_sensors
+from data_manager import add_activity, load_data, save_data, update_device, update_sensors
 import adaAPI
 
 AUTO_FAN_ON = 30
@@ -147,7 +147,7 @@ def run_auto_logic(sensor_data):
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
     pet = sensor_data.get("pet_detected")
-    motion = sensor_data.get("motion", data["sensors"].get("motion", False)), default=False)
+    motion = sensor_data.get("motion")
     distance_food_pct = float(sensor_data.get("distance", data["sensors"].get("distance", 0.0)))
     update_sensors({
         "dog_food": clamp(distance_food_pct, 0, 100),
