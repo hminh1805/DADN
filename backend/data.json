@@ -1,22 +1,606 @@
 {
   "mode": "auto",
   "sensors": {
-    "temperature": 28.4,
-    "humidity": 63.8,
-    "water_level": 30.0,
-    "dog_food": 45.0,
-    "cat_food": 30.0,
-    "motion": false,
+    "temperature": 26.9,
+    "humidity": 50.4,
+    "water_level": 0.0,
+    "dog_food": 56.3,
+    "cat_food": 56.3,
+    "motion": true,
     "pet_detected": null,
-    "timestamp": 1774514862445,
+    "timestamp": 1774571161021,
     "pet_food": 0.0
   },
   "devices": {
-    "fan": false,
+    "fan": true,
     "heater": false,
     "pump": false,
     "speaker": false,
-    "pet_feeder": false
+    "pet_feeder": false,
+    "servo": false
   },
-  "activities": []
+  "activities": [
+    {
+      "id": "1774571164121",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571164121
+    },
+    {
+      "id": "1774571161096",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571161096
+    },
+    {
+      "id": "1774571161080",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571161080
+    },
+    {
+      "id": "1774571161047",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571161047
+    },
+    {
+      "id": "1774571156194",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571156194
+    },
+    {
+      "id": "1774571153168",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571153168
+    },
+    {
+      "id": "1774571153154",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571153154
+    },
+    {
+      "id": "1774571153130",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571153130
+    },
+    {
+      "id": "1774571145003",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571145003
+    },
+    {
+      "id": "1774571137045",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571137045
+    },
+    {
+      "id": "1774571132048",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571132048
+    },
+    {
+      "id": "1774571129025",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571129025
+    },
+    {
+      "id": "1774571129014",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571129014
+    },
+    {
+      "id": "1774571128988",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571128988
+    },
+    {
+      "id": "1774571121020",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571121020
+    },
+    {
+      "id": "1774571116082",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571116082
+    },
+    {
+      "id": "1774571113070",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571113070
+    },
+    {
+      "id": "1774571113060",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571113060
+    },
+    {
+      "id": "1774571113035",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571113035
+    },
+    {
+      "id": "1774571108105",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571108105
+    },
+    {
+      "id": "1774571105079",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571105079
+    },
+    {
+      "id": "1774571105065",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571105065
+    },
+    {
+      "id": "1774571105042",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571105042
+    },
+    {
+      "id": "1774571096986",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571096986
+    },
+    {
+      "id": "1774571089049",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571089049
+    },
+    {
+      "id": "1774571080955",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571080955
+    },
+    {
+      "id": "1774571073040",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571073040
+    },
+    {
+      "id": "1774571064975",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571064975
+    },
+    {
+      "id": "1774571060075",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571060075
+    },
+    {
+      "id": "1774571057055",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571057055
+    },
+    {
+      "id": "1774571057044",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571057044
+    },
+    {
+      "id": "1774571057019",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571057019
+    },
+    {
+      "id": "1774571048946",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571048946
+    },
+    {
+      "id": "1774571044111",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571044111
+    },
+    {
+      "id": "1774571041104",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571041104
+    },
+    {
+      "id": "1774571041088",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571041088
+    },
+    {
+      "id": "1774571041056",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571041056
+    },
+    {
+      "id": "1774571027975",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571027975
+    },
+    {
+      "id": "1774571024963",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571024963
+    },
+    {
+      "id": "1774571024952",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571024952
+    },
+    {
+      "id": "1774571024926",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571024926
+    },
+    {
+      "id": "1774571020048",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774571020048
+    },
+    {
+      "id": "1774571017033",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774571017033
+    },
+    {
+      "id": "1774571017014",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774571017014
+    },
+    {
+      "id": "1774571016987",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571016987
+    },
+    {
+      "id": "1774571008900",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774571008900
+    },
+    {
+      "id": "1774571002029",
+      "type": "info",
+      "message": "Thiết bị fan -> ON.",
+      "timestamp": 1774571002029
+    },
+    {
+      "id": "1774570995928",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570995928
+    },
+    {
+      "id": "1774570992917",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570992917
+    },
+    {
+      "id": "1774570992906",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570992906
+    },
+    {
+      "id": "1774570992886",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570992886
+    },
+    {
+      "id": "1774570987929",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570987929
+    },
+    {
+      "id": "1774570984910",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570984910
+    },
+    {
+      "id": "1774570984899",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570984899
+    },
+    {
+      "id": "1774570984878",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570984878
+    },
+    {
+      "id": "1774570979986",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570979986
+    },
+    {
+      "id": "1774570976948",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570976948
+    },
+    {
+      "id": "1774570976937",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570976937
+    },
+    {
+      "id": "1774570976916",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570976916
+    },
+    {
+      "id": "1774570968888",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570968888
+    },
+    {
+      "id": "1774570960919",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570960919
+    },
+    {
+      "id": "1774570956102",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570956102
+    },
+    {
+      "id": "1774570953062",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570953062
+    },
+    {
+      "id": "1774570953051",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570953051
+    },
+    {
+      "id": "1774570953025",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570953025
+    },
+    {
+      "id": "1774570952993",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570952993
+    },
+    {
+      "id": "1774570952973",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570952973
+    },
+    {
+      "id": "1774570944930",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570944930
+    },
+    {
+      "id": "1774570944910",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570944910
+    },
+    {
+      "id": "1774570944895",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570944895
+    },
+    {
+      "id": "1774570939935",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570939935
+    },
+    {
+      "id": "1774570936919",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570936919
+    },
+    {
+      "id": "1774570936910",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570936910
+    },
+    {
+      "id": "1774570936887",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570936887
+    },
+    {
+      "id": "1774570936866",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570936866
+    },
+    {
+      "id": "1774570936846",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570936846
+    },
+    {
+      "id": "1774570899987",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570899987
+    },
+    {
+      "id": "1774570896962",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570896962
+    },
+    {
+      "id": "1774570896953",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570896953
+    },
+    {
+      "id": "1774570896926",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570896926
+    },
+    {
+      "id": "1774570896894",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570896894
+    },
+    {
+      "id": "1774570896871",
+      "type": "info",
+      "message": "Thiết bị heater -> ON.",
+      "timestamp": 1774570896871
+    },
+    {
+      "id": "1774570891998",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570891998
+    },
+    {
+      "id": "1774570888980",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570888980
+    },
+    {
+      "id": "1774570888971",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570888971
+    },
+    {
+      "id": "1774570888949",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570888949
+    },
+    {
+      "id": "1774570888930",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570888930
+    },
+    {
+      "id": "1774570888917",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570888917
+    },
+    {
+      "id": "1774570883955",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774570883955
+    },
+    {
+      "id": "1774570880947",
+      "type": "warning",
+      "message": "Phát hiện chuyển động ở khu vực cấm.",
+      "timestamp": 1774570880947
+    },
+    {
+      "id": "1774570880938",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774570880938
+    },
+    {
+      "id": "1774570880921",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570880921
+    },
+    {
+      "id": "1774570880901",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570880901
+    },
+    {
+      "id": "1774570880887",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570880887
+    },
+    {
+      "id": "1774570872929",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774570872929
+    },
+    {
+      "id": "1774570872914",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1774570872914
+    },
+    {
+      "id": "1774570872901",
+      "type": "info",
+      "message": "Thiết bị fan -> OFF.",
+      "timestamp": 1774570872901
+    }
+  ]
 }

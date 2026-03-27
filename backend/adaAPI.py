@@ -19,6 +19,11 @@ FEEDS = {
     "heater": f"{AIO_USERNAME}/feeds/heater",
 }
 
+def toBool(x):
+    if x == 'True':
+        return True
+    return False
+
 mqtt_client = mqtt.Client()
 mqtt_client.username_pw_set(AIO_USERNAME, AIO_KEY)
 
@@ -37,8 +42,8 @@ def loc_du_lieu_sensor(payload):
             "temperature": float(raw.get("nhiet_do", raw.get("temperature", 0))),
             "humidity": float(raw.get("do_am", raw.get("humidity", 0))),
             "water_level": float(raw.get("muc_nuoc", raw.get("water_level", 0))),
-            "motion": bool(raw.get("motion", False), default=False),
-            "distance": float(raw.get("distance", raw.get("dis", 0)), default=0.0),
+            "motion": toBool(raw.get("motion", False)),
+            "distance": float(raw.get("distance", raw.get("dis", 0))),
             "timestamp": now_ms()
         }
     except json.JSONDecodeError:
@@ -55,11 +60,11 @@ def loc_du_lieu_sensor(payload):
         if len(parts) >= 5:
             # Ví dụ string từ mạch: RT:RH:SM:motion:dis
             return {
-                "temperature": _to_float(parts[0]),
-                "humidity": _to_float(parts[1]),
-                "water_level": _to_float(parts[2]),
-                "motion": _to_bool(parts[3], default=False),
-                "distance": _to_float(parts[4]),
+                "temperature": float(parts[0]),
+                "humidity": float(parts[1]),
+                "water_level": float(parts[2]),
+                "motion": toBool(parts[3]),
+                "distance": float(parts[4]),
                 "timestamp": now_ms(),
             }
     except Exception as e:
