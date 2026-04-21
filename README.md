@@ -1,17 +1,17 @@
-# 🚀 Đồ Án Đa Ngành
+# Đồ Án Đa Ngành
 
 
-## 🌟 Hardware
+## Hardware
 
-## 🌟 Gateway
+## Gateway
 - **Auto-Detect Port:** Tự động tìm và kết nối với bo mạch (Yolo:Bit/Arduino) qua cổng USB, không cần hardcode tên cổng.
 - **Data Buffering & Anti-Noise:** Bộ lọc thông minh giúp chống nhiễu, chống mất gói tin khi truyền nhận Serial.
 - **Smart Routing:** Phân loại và định tuyến lệnh điều khiển từ Server xuống đúng thiết bị phần cứng (Bơm, LED, Servo).
 
-## 🌟 BackEnd
+## BackEnd
 
 
-## 🌟 FrontEnd
+## FrontEnd
 - Chịu trách nhiệm hiển thị UI Dashboard giám sát và điều khiển.
 - Công nghệ: ReactJS, Vite.
 - **Hướng dẫn chạy Frontend:**
@@ -24,7 +24,7 @@
 
 ---
 
-## 🛠️ Hướng Dẫn Cài Đặt
+## Hướng Dẫn Cài Đặt
 
 **1. Clone code về máy:**
 ```bash
