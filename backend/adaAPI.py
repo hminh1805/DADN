@@ -14,7 +14,8 @@ FEEDS = {
     "pet_detected": f"{AIO_USERNAME}/feeds/pet-detected",
     "pump": f"{AIO_USERNAME}/feeds/maybom",
     "speaker": f"{AIO_USERNAME}/feeds/speaker",
-    "pet_feeder": f"{AIO_USERNAME}/feeds/servo",
+    'dog_feeder': f"{AIO_USERNAME}/feeds/feed-dog",
+    'cat_feeder': f"{AIO_USERNAME}/feeds/feed-cat",
     "fan": f"{AIO_USERNAME}/feeds/quat",
     "heater": f"{AIO_USERNAME}/feeds/heater",
 }
@@ -32,7 +33,7 @@ _callback_nhan_tin_nhan = None
 def now_ms():
     return int(time.time() * 1000)
 
-# ================= BỘ LỌC DỮ LIỆU ĐA NĂNG =================
+# ================= BỘ LỌC DỮ LIỆU =================
 def loc_du_lieu_sensor(payload):
 
     # TRƯỜNG HỢP 1: Nhận được JSON chuẩn (từ Gateway Python gửi lên)

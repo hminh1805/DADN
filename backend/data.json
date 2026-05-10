@@ -1,18 +1,18 @@
 {
-  "mode": "manual",
+  "mode": "auto",
   "sensors": {
-    "temperature": 31.6,
-    "humidity": 57.6,
+    "temperature": 27.2,
+    "humidity": 52.6,
     "water_level": 0.0,
     "dog_food": -19.387755102040813,
     "cat_food": -19.387755102040813,
-    "motion": false,
+    "motion": true,
     "pet_detected": null,
-    "timestamp": 1774580393616,
+    "timestamp": 1774656688310,
     "pet_food": 0.0
   },
   "devices": {
-    "fan": true,
+    "fan": false,
     "heater": false,
     "pump": false,
     "speaker": false,
@@ -22,64 +22,64 @@
   },
   "activities": [
     {
-      "id": "1774580100635",
+      "id": "1776126879772",
       "type": "info",
-      "message": "Thiết bị pump -> OFF.",
-      "timestamp": 1774580100635
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1776126879772
     },
     {
-      "id": "1774580098688",
+      "id": "1776126879661",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1776126879661
+    },
+    {
+      "id": "1774851368363",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1774851368363
+    },
+    {
+      "id": "1774851368339",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1774851368339
+    },
+    {
+      "id": "1774656390824",
+      "type": "info",
+      "message": "Đã bật bơm refill nước tự động.",
+      "timestamp": 1774656390824
+    },
+    {
+      "id": "1774656383625",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho Mochi.",
+      "timestamp": 1774656383625
+    },
+    {
+      "id": "1774656379681",
+      "type": "info",
+      "message": "Thiết bị speaker -> OFF.",
+      "timestamp": 1774656379681
+    },
+    {
+      "id": "1774656377197",
+      "type": "info",
+      "message": "Thiết bị speaker -> ON.",
+      "timestamp": 1774656377197
+    },
+    {
+      "id": "1774656375171",
+      "type": "info",
+      "message": "Thiết bị pump -> OFF.",
+      "timestamp": 1774656375171
+    },
+    {
+      "id": "1774656373054",
       "type": "info",
       "message": "Thiết bị pump -> ON.",
-      "timestamp": 1774580098688
-    },
-    {
-      "id": "1774580097808",
-      "type": "info",
-      "message": "Thiết bị pump -> OFF.",
-      "timestamp": 1774580097808
-    },
-    {
-      "id": "1774580092355",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang manual.",
-      "timestamp": 1774580092355
-    },
-    {
-      "id": "1774580083523",
-      "type": "info",
-      "message": "Đã bật bơm refill nước tự động.",
-      "timestamp": 1774580083523
-    },
-    {
-      "id": "1774580083502",
-      "type": "info",
-      "message": "Thiết bị heater -> OFF.",
-      "timestamp": 1774580083502
-    },
-    {
-      "id": "1774580083485",
-      "type": "info",
-      "message": "Thiết bị fan -> ON.",
-      "timestamp": 1774580083485
-    },
-    {
-      "id": "1774580076275",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1774580076275
-    },
-    {
-      "id": "1774580076254",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1774580076254
-    },
-    {
-      "id": "1774580073550",
-      "type": "info",
-      "message": "Đã bật bơm refill nước tự động.",
-      "timestamp": 1774580073550
+      "timestamp": 1774656373054
     }
   ]
 }
