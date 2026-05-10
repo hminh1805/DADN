@@ -41,6 +41,7 @@ start_mqtt()
 model = YOLO("yolov8n.pt")
 model_pose = YOLO("models/check_pose.pt") 
 # model_pose = YOLO("yolov8n-pose.pt") 
+
 class obj_pet:
     def __init__(self, x,y, start_time):
         self.x = x
@@ -61,13 +62,14 @@ class obj_pet:
 
 
 def feed_food(type_pet ):
+    feeder_key = "dog_feeder" if type_pet == "dog" else "cat_feeder"
     print(f">>> ĐANG CHO {type_pet} ĂN<<<")
-    if type_pet == "dog":
-        publish_data("feed-dog", 1)
-    else:
-        publish_data("feed-cat", 1)
     
-    print("chờ 10s")
+    publish_data(feeder_key, "1") 
+    time.sleep(2) 
+    publish_data(feeder_key, "0") 
+    
+    print(f"chờ {COOLDOWN_TIME} s")
     
     
 def check_pose(img):
