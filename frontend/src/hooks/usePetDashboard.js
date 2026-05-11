@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { fetchLatestSensor, fetchDeviceStatus, fetchActivities, sendCommand } from "../services/api";
+import { fetchLatestSensor, fetchDeviceStatus, fetchActivities, sendCommand, setMode } from "../services/api";
 import { initSocket, SOCKET_EVENTS } from "../services/socket";
 import { MOCK_SENSOR, MOCK_DEVICES } from "../constants/types";
 
@@ -33,6 +33,11 @@ export function usePetDashboard() {
   const humidityRef = useRef(humidity);
   useEffect(() => { tempRef.current = temp; },     [temp]);
   useEffect(() => { humidityRef.current = humidity; }, [humidity]);
+  //
+  useEffect(() => {
+    if (USE_MOCK) return;
+    setMode(autoMode ? "auto" : "manual").catch(console.error);
+  }, [autoMode]);
 
   // ── Helper thêm activity ───────────────────────────────────
   const addActivity = useCallback((type, message) => {
@@ -190,3 +195,5 @@ export function usePetDashboard() {
     addActivity,
   };
 }
+
+

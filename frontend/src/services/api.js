@@ -81,3 +81,9 @@ export async function fetchActivities() {
   const { data } = await http.get(ENDPOINTS.ACTIVITIES);
   return data;
 }
+
+export async function setMode(mode) {
+  if (USE_MOCK) return { success: true, message: "Mock: đã đổi mode" };
+  const { data } = await http.post(ENDPOINTS.MODE, { mode });
+  return data;
+}
