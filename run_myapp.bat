@@ -10,12 +10,16 @@ echo [1] Dang mo Backend Server...
 :: python run.py: Nổ máy Server
 start cmd /k ".\venv\Scripts\activate && cd backend && python run.py"
 
-echo [2] Dang mo Gateway USB...
+::echo [2] Dang mo Gateway USB...
 
-start cmd /k ".\venv\Scripts\activate && cd gatewayV1 && python gatewayv1.py"
+::start cmd /k ".\venv\Scripts\activate && cd gatewayV1 && python gatewayv1.py"
 
 echo [3] Dang mo Frontend Web...
 :: (Tui giả sử thư mục FE của sếp tên là frontend)
 start cmd /k "cd frontend && npm run dev"
+
+echo [4] Dang mo AI Camera (YOLO)...
+:: Kích hoạt venv, vào thư mục backend và chạy script camera
+start cmd /k ".\venv\Scripts\activate && python gatewayV1/cam.py"
 
 echo.

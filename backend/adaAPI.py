@@ -14,8 +14,8 @@ FEEDS = {
     "pet_detected": f"{AIO_USERNAME}/feeds/pet-detected",
     "pump": f"{AIO_USERNAME}/feeds/maybom",
     "speaker": f"{AIO_USERNAME}/feeds/speaker",
-    'dog_feeder': f"{AIO_USERNAME}/feeds/feed-dog",
-    'cat_feeder': f"{AIO_USERNAME}/feeds/feed-cat",
+    'dog_feeder': f"{AIO_USERNAME}/feeds/dog-feeder",
+    'cat_feeder': f"{AIO_USERNAME}/feeds/cat-feeder",
     "fan": f"{AIO_USERNAME}/feeds/quat",
     "heater": f"{AIO_USERNAME}/feeds/heater",
 }

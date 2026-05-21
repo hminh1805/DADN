@@ -1,85 +1,86 @@
 {
-  "mode": "auto",
+  "mode": "manual",
   "sensors": {
     "temperature": 27.2,
     "humidity": 52.6,
     "water_level": 0.0,
     "dog_food": -19.387755102040813,
-    "cat_food": -19.387755102040813,
+    "cat_food": 0,
     "motion": true,
     "pet_detected": null,
-    "timestamp": 1774656688310,
+    "timestamp": 1778407588505,
     "pet_food": 0.0
   },
   "devices": {
     "fan": false,
     "heater": false,
-    "pump": false,
+    "pump": true,
     "speaker": false,
     "pet_feeder": false,
     "servo": false,
-    "cat_feeder": false
+    "cat_feeder": false,
+    "dog_feeder": true
   },
   "activities": [
     {
-      "id": "1776126879772",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1776126879772
-    },
-    {
-      "id": "1776126879661",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1776126879661
-    },
-    {
-      "id": "1774851368363",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1774851368363
-    },
-    {
-      "id": "1774851368339",
-      "type": "info",
-      "message": "Chuyển chế độ hệ thống sang auto.",
-      "timestamp": 1774851368339
-    },
-    {
-      "id": "1774656390824",
-      "type": "info",
-      "message": "Đã bật bơm refill nước tự động.",
-      "timestamp": 1774656390824
-    },
-    {
-      "id": "1774656383625",
-      "type": "success",
-      "message": "Đã nhả thức ăn cho Mochi.",
-      "timestamp": 1774656383625
-    },
-    {
-      "id": "1774656379681",
-      "type": "info",
-      "message": "Thiết bị speaker -> OFF.",
-      "timestamp": 1774656379681
-    },
-    {
-      "id": "1774656377197",
-      "type": "info",
-      "message": "Thiết bị speaker -> ON.",
-      "timestamp": 1774656377197
-    },
-    {
-      "id": "1774656375171",
-      "type": "info",
-      "message": "Thiết bị pump -> OFF.",
-      "timestamp": 1774656375171
-    },
-    {
-      "id": "1774656373054",
+      "id": "1778407640885",
       "type": "info",
       "message": "Thiết bị pump -> ON.",
-      "timestamp": 1774656373054
+      "timestamp": 1778407640886
+    },
+    {
+      "id": "1778407588793",
+      "type": "success",
+      "message": "Máy Mochi (Mèo) đã tự động nhả thức ăn.",
+      "timestamp": 1778407588793
+    },
+    {
+      "id": "1778407588509",
+      "type": "success",
+      "message": "Đã nhả thức ăn cho Mochi.",
+      "timestamp": 1778407588509
+    },
+    {
+      "id": "1778407575514",
+      "type": "info",
+      "message": "Thiết bị heater -> OFF.",
+      "timestamp": 1778407575514
+    },
+    {
+      "id": "1778407570039",
+      "type": "info",
+      "message": "Thiết bị heater -> ON.",
+      "timestamp": 1778407570039
+    },
+    {
+      "id": "1778407561717",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang manual.",
+      "timestamp": 1778407561717
+    },
+    {
+      "id": "1778407537132",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1778407537133
+    },
+    {
+      "id": "1778407534873",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang manual.",
+      "timestamp": 1778407534873
+    },
+    {
+      "id": "1778407491089",
+      "type": "success",
+      "message": "Máy Mochi (Mèo) đã tự động nhả thức ăn.",
+      "timestamp": 1778407491089
+    },
+    {
+      "id": "1778407421380",
+      "type": "info",
+      "message": "Chuyển chế độ hệ thống sang auto.",
+      "timestamp": 1778407421380
     }
   ]
 }

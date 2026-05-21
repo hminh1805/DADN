@@ -221,7 +221,7 @@ def xu_ly_tin_nhan_mqtt(feed_key, payload):
         
         # Cập nhật trạng thái thiết bị trên UI
         set_device_state(feed_key, True)
-        add_activity("success", f"Máy {pet_name} đã tự động nhả thức ăn.")
+        add_realtime_activity("success", f"Máy {pet_name} đã tự động nhả thức ăn.")
 
 
 
