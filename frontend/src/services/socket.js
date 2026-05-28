@@ -22,7 +22,7 @@ export function initSocket() {
   socket = io(SOCKET_URL, {
     reconnectionAttempts: 5,
     reconnectionDelay: 2000,
-    transports: ["websocket"],
+    //transports: ["websocket"],
   });
 
   socket.on("connect",         () => console.log("[Socket] Connected:", socket.id));

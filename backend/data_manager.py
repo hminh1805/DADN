@@ -2,10 +2,13 @@ import copy
 import json
 import os
 from datetime import datetime
+import threading
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "data.json")
 MAX_ACTIVITIES = 10
+
+file_lock = threading.Lock()
 
 DEFAULT_DATA = {
     "mode": "auto",
@@ -51,8 +54,13 @@ def ensure_file():
 
 def load_data():
     ensure_file()
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        incoming = json.load(f)
+    with file_lock:
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                incoming = json.load(f)
+        except json.JSONDecodeError:
+            # Nếu lỡ xui xẻo file bị rỗng/lỗi, dùng data mặc định thay vì crash app
+            incoming = {}
 
     merged = copy.deepcopy(DEFAULT_DATA)
     deep_merge(merged, incoming)
@@ -61,8 +69,9 @@ def load_data():
 
 
 def save_data(data):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    with file_lock:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 def update_sensors(sensor_payload):

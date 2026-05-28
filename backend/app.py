@@ -10,6 +10,10 @@ from flask_socketio import SocketIO
 
 from data_manager import add_activity, load_data, save_data, update_device, update_sensors
 import adaAPI
+from AI_api import predict_thermal_comfort,save_my_data
+
+
+
 
 AUTO_FAN_ON = 30
 AUTO_HEATER_ON = 22
@@ -19,7 +23,7 @@ AUTHORIZED_PET = 'dog'
 
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*",async_mode='threading')
 
 def now_ms():
     return int(datetime.utcnow().timestamp() * 1000)
@@ -32,7 +36,12 @@ def clamp(v, lo, hi):
     return max(lo, min(hi, v))
 
 def publish_device_status():
-    socketio.emit("device_status", load_data()["devices"])
+    #socketio.emit("device_status", load_data()["devices"])
+    data = load_data()
+    socketio.emit("device_status", {
+        **data["devices"],
+        "system_mode": data["mode"]
+    })
 
 
 def publish_sensor_update():
@@ -71,13 +80,34 @@ def timed_toggle(device, duration_sec, feed_key=None):
 def send_to_feed(feed_key, payload):     
         adaAPI.publish_data(feed_key, payload)
 
+def update_param():
+    try:
+        formula_path = "backend/formula.json"
+        if os.path.exists(formula_path):
+            with open(formula_path, "r") as f:
+                data = json.load(f)
+            a = data.get("a", 0.0)
+            b = data.get("b", 0.0)
+            c = data.get("c", 0.0)
+            
+            # Đóng gói chuỗi theo đúng cấu hình mạch chờ đợi (a:b:c)
+            payload = f"{a}:{b}:{c}"
+            
+            # Tiến hành gửi thông qua adaAPI
+            send_to_feed("savevar", payload)
+            print(f"[AIoT] Đã nạp thành công hệ số offline lên mạch: {payload}")
+        else:
+            print("[AIoT] Chưa tìm thấy file formula.json để nạp hệ số.")
+    except Exception as e:
+        print(f"[AIoT] Lỗi trong quá trình nạp hệ số lên mạch: {e}")
+
 
 def execute_command(device, action):
     requested_device = device
     food_inventory_key = None
     food_name = None
 
-    # Xác định thông tin dựa trên từng máy cụ thể mà không cần gom nhóm
+    # Xác định thông tin dựa trên từng máy cụ thể 
     if device == "dog_feeder":
         food_inventory_key = "dog_food"
         food_name = "Buddy"
@@ -103,31 +133,33 @@ def execute_command(device, action):
             publish_sensor_update()
 
         msg = f"Đã nhả thức ăn cho {food_name}."
-        add_activity("success", msg)
+        add_realtime_activity("success", msg)
         return True, msg
 
     if device == "pump" and action == "refill":
         send_to_feed(device, "1")
         timed_toggle("pump", 4.0)
-        add_activity("info", "Đã bật bơm refill nước tự động.")
+        add_realtime_activity("info", "Đã bật bơm refill nước tự động.")
         return True, "Đã bật bơm refill nước."
 
     if action in {"on", "off"}:
         raw = "1" if action == "on" else "0"
         send_to_feed(device, raw)
         set_device_state(device, action == "on")
-        add_activity("info", f"Thiết bị {device} -> {action.upper()}.")
+        add_realtime_activity("info", f"Thiết bị {device} -> {action.upper()}.")
         return True, f"Đã gửi lệnh {action.upper()} cho {device}."
+    elif action in {0,1,2}:
+        send_to_feed(device, str(action))
+        add_realtime_activity("info", f"Thiết bị {device} -> {action}.")
+        return True, f"Đã gửi lệnh {action} cho {device}."
 
     return False, "Action không hợp lệ."
 
 
 def run_auto_logic(sensor_data):
-
-    
-    
     
     temp = float(sensor_data.get("temperature", 0))
+    humidity = float(sensor_data.get("humidity", 0))
     water_level = float(sensor_data.get("water_level", 0))
     pet = sensor_data.get("pet_detected")
     motion = sensor_data.get("motion")
@@ -148,17 +180,24 @@ def run_auto_logic(sensor_data):
     publish_sensor_update()
 
 
-    if temp >= AUTO_FAN_ON:
-        execute_command("fan", "on")
-        execute_command("heater", "off")
+    ai_status = predict_thermal_comfort(temp, humidity)
+    save_my_data(temp, humidity, ai_status)  # Lưu dữ liệu vào file my_data.csv để sau này có thể train lại AI nếu cần
+    print('AI Thermal Comfort Status:', ai_status)
+    if ai_status == -1:  
+        execute_command("fan", 0)
+        execute_command("heater", 1)
 
-    if temp <= AUTO_HEATER_ON:
-        execute_command("heater", "on")
-        execute_command("fan", "off")
+    if ai_status == 0:  
+        execute_command("heater",0)
+        execute_command("fan", 0)
     
-    if round(temp) == AUTO_OFF:
-        execute_command("fan", "off")
-        execute_command("heater", "off")
+    if ai_status == 1:
+        execute_command("fan", 1)
+        execute_command("heater", 0)
+
+    if ai_status == 2:
+        execute_command("fan", 2)
+        execute_command("heater", 0)
 
     if water_level < AUTO_REFILL and not load_data()["devices"]["pump"]:
         execute_command("pump", "refill")
@@ -179,8 +218,7 @@ def run_auto_logic(sensor_data):
         else:
             add_realtime_activity("warning", f"Nhận diện {pet} không đúng cấu hình cho phép.")
             
-def run_manual_logic(sensor_data):
-    
+def run_manual_logic(sensor_data):  
     
     temp = float(sensor_data.get("temperature", 0))
     water_level = float(sensor_data.get("water_level", 0))
@@ -220,13 +258,24 @@ def xu_ly_tin_nhan_mqtt(feed_key, payload):
         print(f">>> Backend nhận thấy: Máy {pet_name} đang hoạt động! <<<")
         
         # Cập nhật trạng thái thiết bị trên UI
+        if payload == "1":
+            add_realtime_activity("success", f"Máy {pet_name} đã tự động nhả thức ăn.")
         set_device_state(feed_key, True)
-        add_realtime_activity("success", f"Máy {pet_name} đã tự động nhả thức ăn.")
+        
 
 
 
 adaAPI.start_mqtt(ham_xu_ly=xu_ly_tin_nhan_mqtt)
+update_param()  # Nạp hệ số offline lên mạch ngay khi khởi động
 
+
+
+
+
+
+
+
+#API FOR FRONTEND
 
 @app.route("/api/sensors/latest", methods=["GET"])
 def get_latest_sensor():
@@ -235,7 +284,13 @@ def get_latest_sensor():
 
 @app.route("/api/devices/status", methods=["GET"])
 def get_device_status():
-    return jsonify(load_data()["devices"])
+    #return jsonify(load_data()["devices"])
+    data = load_data()
+    # Trả về toàn bộ thiết bị đính kèm thêm chế độ hiện tại của hệ thống
+    return jsonify({
+        **data["devices"],
+        "system_mode": data["mode"]
+    })
 
 
 @app.route("/api/devices/command", methods=["POST"])

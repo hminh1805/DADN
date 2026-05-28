@@ -11,6 +11,42 @@ sys.path.append(PARENT_DIR)
 
 from backend.adaAPI import start_mqtt, publish_data
 
+import sys
+import serial.tools.list_ports
+def getPort():
+    ports = serial.tools.list_ports.comports()
+    print("--- ĐANG QUÉT CỔNG USB ---")
+
+    for port in ports:
+        print(f"lỗ cắm: {port.device} - {port.description}")
+        
+        
+        keyword = ["USB", "SERIAL", "CH340", "CP210", "FTDI", "MBED", "ARDUINO", "JLINK"]
+        desc = port.description.upper()
+        if any(key in desc for key in keyword):
+            return port.device
+            
+    print(" Không tìm thấy cổng nào phù hợp!")
+    return "None" 
+
+ser = None
+def openPort():
+    portName = getPort()
+    print("PORT = " + portName)
+    if portName != 'None':
+        try:
+            global ser
+            ser = serial.Serial(port=portName, baudrate=115200)
+            print(f"Đã kết nối mạch qua cổng: {portName}")
+        except Exception as e:
+            print("Lỗi mở cổng USB!")
+            
+    else:
+        print("Không cắm cáp USB. Đang chạy chế độ GIẢ LẬP (Mock Data)!")
+        ser = None
+
+openPort()
+
 
 """
 Ý tưởng:
@@ -61,20 +97,38 @@ class obj_pet:
 
 
 
-def feed_food(type_pet ):
+# def feed_food(type_pet ):
+#     feeder_key = "dog_feeder" if type_pet == "dog" else "cat_feeder"
+#     print(f" ĐANG CHO {type_pet} ĂN")
+    
+#     publish_data(feeder_key, "1") 
+#     time.sleep(2) 
+#     publish_data(feeder_key, "0") 
+    
+#     print(f"chờ {COOLDOWN_TIME} s")
+    
+def feed_food(type_pet):
     feeder_key = "dog_feeder" if type_pet == "dog" else "cat_feeder"
-    print(f">>> ĐANG CHO {type_pet} ĂN<<<")
+    print(f" ĐANG CHO {type_pet} ĂN")
     
-    publish_data(feeder_key, "1") 
+    # Gửi lệnh qua Serial (Cứ bắn lệnh xuống, mạch nhận được thì chạy)
+    if ser and ser.is_open:
+        cmd = b'D1\n' if type_pet == "dog" else b'C1\n'
+        ser.write(cmd)
+
     time.sleep(2) 
-    publish_data(feeder_key, "0") 
+
+    # Tắt qua Serial
+    if ser and ser.is_open:
+        cmd = b'D0\n' if type_pet == "dog" else b'C0\n'
+        ser.write(cmd)
     
-    print(f"chờ {COOLDOWN_TIME} s")
+    print(f"chờ {COOLDOWN_TIME} s")   
     
     
 def check_pose(img):
-    print(">>> ĐANG KIỂM TRA PET <<<")
-    result_pose = model_pose(img, conf=0.5, verbose=False)
+    print("ĐANG KIỂM TRA PET ")
+    result_pose = model_pose(img, conf=0.6, verbose=False)
     
     img_debug = result_pose[0].plot()
     img_debug_resized = cv2.resize(img_debug, (300, 300))
@@ -117,7 +171,7 @@ def runCamera(sec:int = 5,ratio:float = 0.35):
         if cv2.waitKey(1) == ord('q'):
             break
         
-        result = model(frame,classes=[15,16],conf = 0.5,verbose=False)
+        result = model(frame,classes=[15,16],conf = 0.65,verbose=False)
         f = result[0].plot()        
 
         # pet_detected_in_zone = False # Cờ báo hiệu frame hiện tại có pet ở gần không

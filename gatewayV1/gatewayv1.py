@@ -166,7 +166,7 @@ client.connect()
 client.loop_background()
 
 ser = None
-def operPort():
+def openPort():
     portName = getPort()
     print("PORT = " + portName)
     if portName != 'None':

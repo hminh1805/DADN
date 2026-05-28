@@ -18,6 +18,7 @@ FEEDS = {
     'cat_feeder': f"{AIO_USERNAME}/feeds/cat-feeder",
     "fan": f"{AIO_USERNAME}/feeds/quat",
     "heater": f"{AIO_USERNAME}/feeds/heater",
+    "savevar": f"{AIO_USERNAME}/feeds/savevar"
 }
 
 def toBool(x):

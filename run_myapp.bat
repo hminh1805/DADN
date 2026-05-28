@@ -8,7 +8,7 @@ echo [1] Dang mo Backend Server...
 :: cd backend: Chui vào thư mục backend
 :: call venv\Scripts\activate: Bật môi trường ảo ảo
 :: python run.py: Nổ máy Server
-start cmd /k ".\venv\Scripts\activate && cd backend && python run.py"
+start cmd /k ".\venv\Scripts\activate && python backend/run.py"
 
 ::echo [2] Dang mo Gateway USB...
 
