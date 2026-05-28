@@ -34,10 +34,10 @@ export function usePetDashboard() {
   useEffect(() => { tempRef.current = temp; },     [temp]);
   useEffect(() => { humidityRef.current = humidity; }, [humidity]);
   //
-  useEffect(() => {
-    if (USE_MOCK) return;
-    setMode(autoMode ? "auto" : "manual").catch(console.error);
-  }, [autoMode]);
+  // useEffect(() => {
+  //   if (USE_MOCK) return;
+  //   setMode(autoMode ? "auto" : "manual").catch(console.error);
+  // }, [autoMode]);
 
   // ── Helper thêm activity ───────────────────────────────────
   const addActivity = useCallback((type, message) => {
@@ -71,9 +71,27 @@ export function usePetDashboard() {
     if (data.dog_feeder !== undefined || data.cat_feeder !== undefined) {
       setDetected(data.dog_feeder ? "dog" : data.cat_feeder ? "cat" : null);
     }
+
+    if (data.system_mode !== undefined) {
+      setAutoMode(data.system_mode === "auto");
+    }
   }, []);
 
   // ── Khởi tạo: fetch lần đầu + kết nối socket ───────────────
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (USE_MOCK) return;
+    
+    // Nếu là lần đầu tiên load trang, để tầng API fetch lo, không tự ý gửi lệnh POST đè lên chế độ cũ
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    
+    setMode(autoMode ? "auto" : "manual").catch(console.error);
+  }, [autoMode]);
+
   useEffect(() => {
     // Fetch dữ liệu khởi tạo
     fetchLatestSensor().then(applySensor).catch(console.error);
