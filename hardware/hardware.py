@@ -20,7 +20,7 @@ tiny_rgb = RGBLed(pin2.pin, 4)
 AIO_SERVER = 'io.adafruit.com'
 AIO_PORT = 1883
 AIO_USERNAME = 'DADN252'
-AIO_KEY = 'key'
+AIO_KEY = 'mykey'
 
 a = 0.0
 b = 0.0
@@ -52,8 +52,8 @@ def connect_adafruit():
     mqtt.on_receive_message('heater', on_mqtt_message_receive_callback__heater_)
     mqtt.on_receive_message('maybom', on_mqtt_message_receive_callback__maybom_)
     #mqtt.on_receive_message('servo', on_mqtt_message_receive_callback__servo_)
-    mqtt.on_receive_message('dog-feeder', on_mqtt_message_receive_callback__dog_feeder)
-    mqtt.on_receive_message('cat-feeder', on_mqtt_message_receive_callback__cat_feeder)
+    mqtt.on_receive_message('dog-feeder', on_mqtt_message_receive_callback__dog_feeder_)
+    mqtt.on_receive_message('cat-feeder', on_mqtt_message_receive_callback__cat_feeder_)
     mqtt.on_receive_message('quat', on_mqtt_message_receive_callback__quat_)
     mqtt.on_receive_message('speaker', on_mqtt_message_receive_callback__speaker_)
     mqtt.on_receive_message('savevar', on_mqtt_message_receive_callback__savevar_)
@@ -75,16 +75,16 @@ def listen_serial_commands():
         if char == 'D':
             state = sys.stdin.read(1)
             if state == '1':
-                on_mqtt_message_receive_callback__dog_feeder('1')
+                on_mqtt_message_receive_callback__dog_feeder_('1')
             elif state == '0':
-                on_mqtt_message_receive_callback__dog_feeder('0')
+                on_mqtt_message_receive_callback__dog_feeder_('0')
         
         elif char == 'C':
             state = sys.stdin.read(1)
             if state == '1':
-                on_mqtt_message_receive_callback__cat_feeder('1')
+                on_mqtt_message_receive_callback__cat_feeder_('1')
             elif state == '0':
-                on_mqtt_message_receive_callback__cat_feeder('0')
+                on_mqtt_message_receive_callback__cat_feeder_('0')
 
 def auto_ctrl():
   global x
@@ -98,7 +98,7 @@ def auto_ctrl():
       set_fan_speed(100)
     else:
       if x >= 1:
-        set_fan_speed(70)
+        set_fan_speed(50)
       else:
         set_fan_speed(0)
 
@@ -120,15 +120,19 @@ def on_mqtt_message_receive_callback__servo_(th_C3_B4ng_tin):
   else:
     pin15.servo_write(0)
 
-def on_mqtt_message_receive_callback__dog_feeder(th_C3_B4ng_tin):
+def on_mqtt_message_receive_callback__dog_feeder_(th_C3_B4ng_tin):
   if th_C3_B4ng_tin == '1':
     pin15.servo_write(100) # Cắm Servo của Chó ở chân Pin 15
+    time.sleep_ms(2000)    # Mạch tự đếm 2 giây
+    pin15.servo_write(0)
   else:
     pin15.servo_write(0)
 
-def on_mqtt_message_receive_callback__cat_feeder(th_C3_B4ng_tin):
+def on_mqtt_message_receive_callback__cat_feeder_(th_C3_B4ng_tin):
   if th_C3_B4ng_tin == '1':
     pin13.servo_write(100) # Cắm Servo của Mèo ở chân Pin 13
+    time.sleep_ms(2000)    # Mạch tự đếm 2 giây
+    pin13.servo_write(0)
   else:
     pin13.servo_write(0)
 
@@ -136,7 +140,7 @@ def on_mqtt_message_receive_callback__quat_(th_C3_B4ng_tin):
   if th_C3_B4ng_tin == '2':
     pin16.write_analog(round(translate(100, 0, 100, 0, 1023)))
   elif th_C3_B4ng_tin == '1':
-    pin16.write_analog(round(translate(70, 0, 100, 0, 1023)))
+    pin16.write_analog(round(translate(40, 0, 100, 0, 1023)))
   else:
     pin16.write_analog(round(translate(0, 0, 100, 0, 1023)))
 
@@ -249,11 +253,15 @@ if True:
 
 while True:
   try:
-    mqtt.check_message()
-  except:
-    ada_connected = False
-  
-  listen_serial_commands()
-  event_manager.run()
-  
+    if ada_connected == True:
+      try:
+        mqtt.check_message()
+      except:
+        ada_connected = False
+    
+    listen_serial_commands()
+    event_manager.run()
+  except Exception as e:
+    
+    print(">>> MẠCH BÁO LỖI NHƯNG KHÔNG SẬP:", e)
   time.sleep_ms(10)

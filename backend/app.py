@@ -166,9 +166,14 @@ def run_auto_logic(sensor_data):
     distance_food_pct = float(sensor_data.get("distance"))
     
     #
-    max_food = 0.2
-    min_food = 10.0
-    cur_food = (10.0 - distance_food_pct)/(10.0 - 0.2)
+    if distance_food_pct > 180 :
+        distance_food_pct = 0
+    elif distance_food_pct < 0.2:
+        distance_food_pct = 0
+    elif distance_food_pct > 20:
+        distance_food_pct = 20
+        
+    cur_food = (100 - distance_food_pct*5)
     
     update_sensors({
         # "dog_food": clamp(distance_food_pct, 0, 100),
@@ -225,9 +230,15 @@ def run_manual_logic(sensor_data):
     pet = sensor_data.get("pet_detected")
     motion = sensor_data.get("motion")
     distance_food_pct = float(sensor_data.get("distance"))
-    max_food = 0.2
-    min_food = 10.0
-    cur_food = (10.0 - distance_food_pct)/(10.0 - 0.2)
+    
+    if distance_food_pct > 180 :
+        distance_food_pct = 0
+    elif distance_food_pct < 0.2:
+        distance_food_pct = 0
+    elif distance_food_pct > 20:
+        distance_food_pct = 20
+    
+    cur_food = (100 - distance_food_pct*5)
     
     update_sensors({
         # "dog_food": clamp(distance_food_pct, 0, 100),

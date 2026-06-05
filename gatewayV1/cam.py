@@ -116,12 +116,12 @@ def feed_food(type_pet):
         cmd = b'D1\n' if type_pet == "dog" else b'C1\n'
         ser.write(cmd)
 
-    time.sleep(2) 
+    # time.sleep(2) 
 
-    # Tắt qua Serial
-    if ser and ser.is_open:
-        cmd = b'D0\n' if type_pet == "dog" else b'C0\n'
-        ser.write(cmd)
+    # # Tắt qua Serial
+    # if ser and ser.is_open:
+    #     cmd = b'D0\n' if type_pet == "dog" else b'C0\n'
+    #     ser.write(cmd)
     
     print(f"chờ {COOLDOWN_TIME} s")   
     
